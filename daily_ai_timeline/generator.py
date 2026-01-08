@@ -16,7 +16,7 @@ from typing import Optional
 from .config import Config
 from .ingest import NewsItem
 from .prompt import build_prompt
-from .utils import ensure_output_dir, save_json, save_text
+from .utils import calculate_reading_time, ensure_output_dir, save_json, save_text
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +151,7 @@ class GeneratedArticle:
     headline: str
     sources: list[dict]
     generated_at: datetime
+    reading_time_minutes: int = 0
     hero_image_path: Optional[Path] = None
 
 
@@ -276,6 +277,10 @@ def generate_article(
     headline = extract_headline(article)
     logger.info(f"Article headline: {headline}")
 
+    # Calculate reading time
+    reading_time = calculate_reading_time(article)
+    logger.info(f"Estimated reading time: {reading_time} min")
+
     # Prepare sources metadata
     sources = [item.to_dict() for item in items]
 
@@ -284,6 +289,7 @@ def generate_article(
         headline=headline,
         sources=sources,
         generated_at=date,
+        reading_time_minutes=reading_time,
     )
 
 
@@ -315,6 +321,7 @@ def save_outputs(
     sources_data = {
         "generated_at": result.generated_at.isoformat(),
         "headline": result.headline,
+        "reading_time_minutes": result.reading_time_minutes,
         "hero_image": str(result.hero_image_path) if result.hero_image_path else None,
         "item_count": len(result.sources),
         "items": result.sources,

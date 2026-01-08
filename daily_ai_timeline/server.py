@@ -63,6 +63,14 @@ def get_html_template() -> str:
             font-size: 0.9rem;
             color: #8892b0;
             font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        header .reading-time {
+            font-size: 0.85rem;
+            color: #64ffda;
+            font-weight: 500;
+            letter-spacing: 1px;
             margin-bottom: 25px;
         }
 
@@ -177,6 +185,7 @@ def get_html_template() -> str:
         <header>
             <p class="brand">Daily AI Timeline</p>
             <p class="date">$date</p>
+            $reading_time_section
             $hero_section
             <h1 class="headline">$headline</h1>
         </header>
@@ -220,6 +229,7 @@ def render_blog(markdown_path: Path, output_path: Path) -> str:
     sources_path = markdown_path.parent / "sources.json"
     headline = "Daily AI Timeline"
     date_str = ""
+    reading_time_minutes = None
     hero_image_path = None
 
     if sources_path.exists():
@@ -233,12 +243,21 @@ def render_blog(markdown_path: Path, output_path: Path) -> str:
         if "headline" in sources and sources["headline"]:
             headline = sources["headline"]
 
+        # Get reading time from sources.json
+        if "reading_time_minutes" in sources:
+            reading_time_minutes = sources["reading_time_minutes"]
+
         # Check for hero image
         if "hero_image" in sources and sources["hero_image"]:
             hero_image_path = sources["hero_image"]
     else:
         from datetime import datetime
         date_str = datetime.now().strftime("%A, %B %d, %Y")
+
+    # Build reading time section HTML
+    reading_time_section = ""
+    if reading_time_minutes:
+        reading_time_section = f'<p class="reading-time">{reading_time_minutes} min read</p>'
 
     # Build hero section HTML
     hero_section = ""
@@ -251,6 +270,7 @@ def render_blog(markdown_path: Path, output_path: Path) -> str:
     full_html = template.substitute(
         date=date_str,
         headline=headline,
+        reading_time_section=reading_time_section,
         hero_section=hero_section,
         content=html_content
     )
