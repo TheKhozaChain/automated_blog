@@ -148,8 +148,103 @@ class GeneratedArticle:
     """Container for the generated article."""
 
     article: str
+    headline: str
     sources: list[dict]
     generated_at: datetime
+    hero_image_path: Optional[Path] = None
+
+
+def extract_headline(article: str) -> str:
+    """Extract the headline from the article markdown.
+
+    Args:
+        article: The full article markdown
+
+    Returns:
+        The headline text (without the # prefix)
+    """
+    import re
+    # Look for H1 headline at the start
+    match = re.match(r'^#\s+(.+?)(?:\n|$)', article.strip())
+    if match:
+        return match.group(1).strip()
+    # Fallback: use first line
+    first_line = article.strip().split('\n')[0]
+    return first_line.lstrip('#').strip()
+
+
+def generate_hero_image(
+    headline: str,
+    article_preview: str,
+    config: Config,
+    output_dir: Path,
+) -> Optional[Path]:
+    """Generate a hero image using DALL-E based on the article content.
+
+    Args:
+        headline: The article headline
+        article_preview: First few paragraphs of the article
+        config: Application configuration
+        output_dir: Directory to save the image
+
+    Returns:
+        Path to the saved image, or None if generation fails
+    """
+    if not config.openai_api_key:
+        logger.warning("OpenAI API key required for image generation. Skipping.")
+        return None
+
+    try:
+        from openai import OpenAI
+        import requests
+
+        client = OpenAI(api_key=config.openai_api_key)
+
+        # Create a prompt for DALL-E based on the headline and content
+        image_prompt = f"""Create a sophisticated, editorial-style hero image for a technology article.
+
+Headline: "{headline}"
+
+Style requirements:
+- Modern, clean, minimalist aesthetic
+- Abstract or conceptual representation of AI/technology themes
+- Dark, moody color palette with accent colors (deep blues, teals, purples)
+- Suitable for a professional tech publication like Wired or MIT Technology Review
+- No text or words in the image
+- Cinematic lighting, high contrast
+- Could include abstract neural networks, geometric patterns, futuristic cityscapes, or symbolic imagery
+
+The image should evoke innovation, progress, and the intersection of technology with society."""
+
+        logger.info("Generating hero image with DALL-E...")
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=image_prompt,
+            size="1792x1024",  # Wide format for hero image
+            quality="standard",
+            n=1,
+        )
+
+        image_url = response.data[0].url
+        if not image_url:
+            logger.warning("No image URL returned from DALL-E")
+            return None
+
+        # Download and save the image
+        image_response = requests.get(image_url, timeout=30)
+        image_response.raise_for_status()
+
+        ensure_output_dir(output_dir)
+        image_path = output_dir / "hero.png"
+        with open(image_path, 'wb') as f:
+            f.write(image_response.content)
+
+        logger.info(f"Saved hero image to {image_path}")
+        return image_path
+
+    except Exception as e:
+        logger.warning(f"Failed to generate hero image: {e}")
+        return None
 
 
 def generate_article(
@@ -177,11 +272,16 @@ def generate_article(
     system_prompt, user_prompt = build_prompt(items, date)
     article = provider.generate(system_prompt, user_prompt, max_tokens=3000)
 
+    # Extract headline from the article
+    headline = extract_headline(article)
+    logger.info(f"Article headline: {headline}")
+
     # Prepare sources metadata
     sources = [item.to_dict() for item in items]
 
     return GeneratedArticle(
         article=article,
+        headline=headline,
         sources=sources,
         generated_at=date,
     )
@@ -214,12 +314,18 @@ def save_outputs(
     sources_path = output_dir / "sources.json"
     sources_data = {
         "generated_at": result.generated_at.isoformat(),
+        "headline": result.headline,
+        "hero_image": str(result.hero_image_path) if result.hero_image_path else None,
         "item_count": len(result.sources),
         "items": result.sources,
     }
     save_json(sources_data, sources_path)
     saved_files["sources"] = sources_path
     logger.info(f"Saved sources to {sources_path}")
+
+    # Record hero image path if it exists
+    if result.hero_image_path:
+        saved_files["hero_image"] = result.hero_image_path
 
     return saved_files
 
@@ -228,6 +334,7 @@ def run_generation_pipeline(
     items: list[NewsItem],
     config: Config,
     date: Optional[datetime] = None,
+    generate_image: bool = True,
 ) -> tuple[GeneratedArticle, dict[str, Path]]:
     """Run the complete generation pipeline.
 
@@ -235,12 +342,24 @@ def run_generation_pipeline(
         items: List of NewsItem objects
         config: Application configuration
         date: Date for the post (defaults to today)
+        generate_image: Whether to generate a hero image with DALL-E
 
     Returns:
         Tuple of (GeneratedArticle, saved file paths)
     """
     # Generate the article
     result = generate_article(items, config, date)
+
+    # Generate hero image if enabled
+    if generate_image:
+        article_preview = result.article[:500]
+        image_path = generate_hero_image(
+            headline=result.headline,
+            article_preview=article_preview,
+            config=config,
+            output_dir=config.output_dir,
+        )
+        result.hero_image_path = image_path
 
     # Save to files
     saved_files = save_outputs(result, config.output_dir)

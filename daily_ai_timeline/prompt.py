@@ -34,16 +34,22 @@ The link text should be the most interesting or specific phrase from the story -
 
 ## STRUCTURE
 
-1. **Opening**: Start with a bold, declarative sentence that captures the day's theme or most significant development. No date header needed.
+1. **Headline**: Start with a catchy, editorial-style headline on its own line, formatted as a markdown H1 (# Headline). The headline should:
+   - Be 6-12 words, evocative and memorable
+   - Capture the day's theme or most striking development
+   - Use literary devices (alliteration, metaphor, contrast) when appropriate
+   - Examples: "The Week AI Came Home", "Chips, Ships, and the New Arms Race", "When Robots Learn to Fold"
 
-2. **Body**: 6-10 micro-paragraphs, each:
+2. **Opening**: After the headline, start with a bold, declarative sentence that captures the day's theme or most significant development.
+
+3. **Body**: 6-10 micro-paragraphs, each:
    - Covers ONE distinct development or story
    - Is 2-4 sentences long
    - Has 1-2 inline links embedded naturally in the prose
    - Uses precise language and specific details (names, numbers, dates)
    - Avoids hype words like "revolutionary," "game-changing," or "groundbreaking"
 
-3. **Closing**: A memorable single sentence connecting today's news to a broader historical arc or trend.
+4. **Closing**: A memorable single sentence connecting today's news to a broader historical arc or trend.
 
 ## TONE
 
@@ -119,6 +125,7 @@ Here are the top AI/tech news items to cover. For each item, embed the URL as an
 ---
 
 Write a unified article following the style guidelines. Remember:
+- Start with a catchy headline as H1 (# Headline)
 - Each link must be INLINE within a descriptive phrase (not at the end of paragraphs)
 - The link text should describe what the reader will find
 - Cover all items with 2-4 sentences each

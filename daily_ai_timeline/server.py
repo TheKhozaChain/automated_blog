@@ -18,7 +18,10 @@ def get_html_template() -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily AI Timeline</title>
+    <title>$headline - Daily AI Timeline</title>
+    <meta property="og:title" content="$headline">
+    <meta property="og:image" content="hero.png">
+    <meta property="og:type" content="article">
     <style>
         * {
             margin: 0;
@@ -47,19 +50,36 @@ def get_html_template() -> str:
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        header h1 {
-            font-size: 1.8rem;
+        header .brand {
+            font-size: 0.9rem;
             font-weight: 400;
             letter-spacing: 3px;
             text-transform: uppercase;
             color: #64ffda;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         header .date {
             font-size: 0.9rem;
             color: #8892b0;
             font-style: italic;
+            margin-bottom: 25px;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .headline {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            margin-top: 20px;
         }
 
         article {
@@ -70,13 +90,17 @@ def get_html_template() -> str:
             border: 1px solid rgba(255,255,255,0.05);
         }
 
+        article h1 {
+            display: none;
+        }
+
         article p {
             margin-bottom: 1.8em;
             font-size: 1.1rem;
             color: #ccd6f6;
         }
 
-        article p:first-child {
+        article p:first-of-type {
             font-size: 1.3rem;
             font-weight: 600;
             color: #fff;
@@ -85,7 +109,7 @@ def get_html_template() -> str:
             margin-bottom: 2em;
         }
 
-        article p:last-child {
+        article p:last-of-type {
             font-size: 1.2rem;
             font-weight: 600;
             color: #64ffda;
@@ -139,8 +163,11 @@ def get_html_template() -> str:
             article p {
                 font-size: 1rem;
             }
-            article p:first-child {
+            article p:first-of-type {
                 font-size: 1.1rem;
+            }
+            .headline {
+                font-size: 1.6rem;
             }
         }
     </style>
@@ -148,8 +175,10 @@ def get_html_template() -> str:
 <body>
     <div class="container">
         <header>
-            <h1>Daily AI Timeline</h1>
+            <p class="brand">Daily AI Timeline</p>
             <p class="date">$date</p>
+            $hero_section
+            <h1 class="headline">$headline</h1>
         </header>
 
         <article>
@@ -175,6 +204,9 @@ def render_blog(markdown_path: Path, output_path: Path) -> str:
     Returns:
         The HTML content
     """
+    import json
+    import re
+
     # Read markdown
     md_content = markdown_path.read_text(encoding='utf-8')
 
@@ -184,14 +216,42 @@ def render_blog(markdown_path: Path, output_path: Path) -> str:
     # Make all links open in a new tab
     html_content = html_content.replace('<a href=', '<a target="_blank" rel="noopener noreferrer" href=')
 
-    # Get current date
-    from datetime import datetime
-    date_str = datetime.now().strftime("%A, %B %d, %Y")
+    # Get metadata from sources.json
+    sources_path = markdown_path.parent / "sources.json"
+    headline = "Daily AI Timeline"
+    date_str = ""
+    hero_image_path = None
+
+    if sources_path.exists():
+        with open(sources_path, 'r') as f:
+            sources = json.load(f)
+        from dateutil import parser as date_parser
+        generated_dt = date_parser.parse(sources["generated_at"])
+        date_str = generated_dt.strftime("%A, %B %d, %Y")
+
+        # Get headline from sources.json
+        if "headline" in sources and sources["headline"]:
+            headline = sources["headline"]
+
+        # Check for hero image
+        if "hero_image" in sources and sources["hero_image"]:
+            hero_image_path = sources["hero_image"]
+    else:
+        from datetime import datetime
+        date_str = datetime.now().strftime("%A, %B %d, %Y")
+
+    # Build hero section HTML
+    hero_section = ""
+    hero_file = markdown_path.parent / "hero.png"
+    if hero_file.exists():
+        hero_section = '<img src="hero.png" alt="Article hero image" class="hero-image">'
 
     # Render template using string.Template (uses $ instead of {})
     template = Template(get_html_template())
     full_html = template.substitute(
         date=date_str,
+        headline=headline,
+        hero_section=hero_section,
         content=html_content
     )
 

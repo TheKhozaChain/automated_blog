@@ -8,6 +8,8 @@ Automate daily AI timeline posts in the style of Dr Alex Wissner-Gross. This too
 - **Smart deduplication**: URL normalization + fuzzy title matching
 - **Relevance scoring**: Recency, source credibility, keywords, metrics
 - **LLM generation**: Supports both OpenAI and Anthropic APIs
+- **AI-generated hero images**: DALL-E generates stunning editorial images for each article
+- **Editorial headlines**: Catchy, memorable headlines generated for each post
 - **Multiple output formats**: X (with thread support), LinkedIn, full markdown
 
 ## Quick Start
@@ -46,7 +48,7 @@ TIMEZONE=Australia/Sydney
 OUTPUT_DIR=out
 ```
 
-### 3. Run
+### 3. Generate Content
 
 ```bash
 # Generate daily post (last 24 hours)
@@ -62,17 +64,39 @@ python -m daily_ai_timeline run --top 15
 python -m daily_ai_timeline sources
 ```
 
+### 4. View the Blog
+
+After generating content, start the local server to view your blog:
+
+```bash
+# Start the server and open in browser
+python -m daily_ai_timeline serve
+
+# Or specify a custom port
+python -m daily_ai_timeline serve --port 3000
+
+# Start without auto-opening browser
+python -m daily_ai_timeline serve --no-browser
+```
+
+Then open http://localhost:8000 in your browser.
+
+> **Note:** You must run `serve` after each `run` to see updated content. The `run` command generates the markdown files, while `serve` converts them to HTML and starts the web server.
+
 ## Output Files
 
 After running, you'll find these files in `out/`:
 
-- `today.md` - Full markdown post (1500-2000 words)
-- `today_linkedin.txt` - LinkedIn version (900-1400 chars)
-- `today_x.txt` - X version (single tweet + thread)
-- `sources.json` - Metadata for selected items
+- `today.md` - Full markdown post with headline (800-1200 words)
+- `hero.png` - AI-generated hero image (1792x1024, DALL-E 3)
+- `index.html` - Rendered HTML blog page
+- `sources.json` - Metadata including headline, image path, and selected items
+
+> **Note:** Hero image generation requires an OpenAI API key (uses DALL-E 3).
 
 ## CLI Options
 
+### Run Command
 ```
 python -m daily_ai_timeline run [OPTIONS]
 
@@ -82,6 +106,15 @@ Options:
   --output, -o DIR         Output directory (default: out/)
   --fetch-content          Fetch full article content
   --quiet, -q              Suppress progress bars
+```
+
+### Serve Command
+```
+python -m daily_ai_timeline serve [OPTIONS]
+
+Options:
+  --port, -p PORT          Port to serve on (default: 8000)
+  --no-browser             Don't auto-open browser
 ```
 
 ## Development
@@ -110,6 +143,7 @@ daily_ai_timeline/
 │   ├── dedupe.py        # Deduplication & scoring
 │   ├── prompt.py        # LLM prompts
 │   ├── generator.py     # LLM integration
+│   ├── server.py        # Local blog server
 │   └── utils.py         # Utilities
 ├── tests/
 ├── out/                  # Generated outputs
