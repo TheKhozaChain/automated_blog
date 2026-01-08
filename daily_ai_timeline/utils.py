@@ -204,3 +204,40 @@ def split_into_tweets(text: str, max_length: int = 280) -> list[str]:
 def validate_tweet_length(text: str, max_length: int = 280) -> bool:
     """Check if text fits within tweet character limit."""
     return len(text) <= max_length
+
+
+def calculate_reading_time(text: str, words_per_minute: int = 238) -> int:
+    """Calculate estimated reading time for text content.
+
+    Args:
+        text: The text content (markdown or plain text)
+        words_per_minute: Average reading speed (default: 238 wpm, industry standard)
+
+    Returns:
+        Estimated reading time in minutes (rounded up, minimum 1)
+    """
+    # Remove markdown formatting
+    # Remove code blocks
+    clean = re.sub(r'```[\s\S]*?```', '', text)
+    # Remove inline code
+    clean = re.sub(r'`[^`]+`', '', clean)
+    # Remove links but keep link text
+    clean = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', clean)
+    # Remove images
+    clean = re.sub(r'!\[([^\]]*)\]\([^\)]+\)', '', clean)
+    # Remove HTML tags
+    clean = re.sub(r'<[^>]+>', '', clean)
+    # Remove markdown headers
+    clean = re.sub(r'^#+\s+', '', clean, flags=re.MULTILINE)
+    # Remove bold/italic markers
+    clean = re.sub(r'[*_]{1,2}([^*_]+)[*_]{1,2}', r'\1', clean)
+
+    # Count words
+    words = clean.split()
+    word_count = len(words)
+
+    # Calculate reading time (round up, minimum 1 minute)
+    import math
+    reading_time = max(1, math.ceil(word_count / words_per_minute))
+
+    return reading_time
