@@ -6,11 +6,11 @@ Track planned improvements for the blog. ~~Strikethrough~~ items are completed.
 
 ## 📰 Content & Sources
 
-1. **More sources** - Add Google News API, Reddit (r/MachineLearning, r/artificial), Twitter/X lists, newsletters (The Batch, Import AI)
+1. ~~**More sources** - Add Google News API, Reddit (r/MachineLearning, r/artificial), Twitter/X lists, newsletters (The Batch, Import AI)~~ ✅ Added Reddit r/MachineLearning and r/artificial
 
-2. **Historical archive** - Keep past articles in a browsable archive instead of overwriting `today.md`
+2. ~~**Historical archive** - Keep past articles in a browsable archive instead of overwriting `today.md`~~ ✅ Articles saved to `out/archive/` with dates, archive.html page added
 
-3. **Weekly digest mode** - Generate a longer weekly roundup in addition to daily posts
+3. ~~**Weekly digest mode** - Generate a longer weekly roundup in addition to daily posts~~ ✅ Added `--mode weekly` (7-day lookback)
 
 ---
 
