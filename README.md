@@ -12,6 +12,24 @@ Automate daily AI timeline posts in the style of Dr Alex Wissner-Gross. This too
 - **Editorial headlines**: Catchy, memorable headlines generated for each post
 - **Multiple output formats**: X (with thread support), LinkedIn, full markdown
 
+## Daily Usage (TL;DR)
+
+Run these two commands each day to generate and view the blog:
+
+```bash
+# Step 1: Generate today's content (fetches news, creates article + hero image)
+python -m daily_ai_timeline run --mode daily
+
+# Step 2: Start the server to view the blog
+python -m daily_ai_timeline serve
+```
+
+Then open http://localhost:8000 in your browser.
+
+> **Important:** The `run` command generates content. The `serve` command only displays it. You must run BOTH commands to see today's blog. If you only run `serve`, you'll see yesterday's content.
+
+---
+
 ## Quick Start
 
 ### 1. Installation
