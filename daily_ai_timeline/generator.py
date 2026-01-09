@@ -308,13 +308,26 @@ def save_outputs(
     """
     ensure_output_dir(output_dir)
 
+    # Create archive directory
+    archive_dir = output_dir / "archive"
+    ensure_output_dir(archive_dir)
+
     saved_files = {}
 
-    # Save article as markdown
+    # Generate date string for archive
+    date_str = result.generated_at.strftime("%Y-%m-%d")
+
+    # Save article as markdown (today.md for current, dated for archive)
     article_path = output_dir / "today.md"
     save_text(result.article, article_path)
     saved_files["article"] = article_path
     logger.info(f"Saved article to {article_path}")
+
+    # Save dated copy to archive
+    archive_article_path = archive_dir / f"{date_str}.md"
+    save_text(result.article, archive_article_path)
+    saved_files["archive_article"] = archive_article_path
+    logger.info(f"Saved archive article to {archive_article_path}")
 
     # Save sources metadata
     sources_path = output_dir / "sources.json"
@@ -329,6 +342,19 @@ def save_outputs(
     save_json(sources_data, sources_path)
     saved_files["sources"] = sources_path
     logger.info(f"Saved sources to {sources_path}")
+
+    # Save dated sources to archive
+    archive_sources_path = archive_dir / f"{date_str}.json"
+    save_json(sources_data, archive_sources_path)
+    saved_files["archive_sources"] = archive_sources_path
+
+    # Copy hero image to archive if it exists
+    if result.hero_image_path and result.hero_image_path.exists():
+        import shutil
+        archive_hero_path = archive_dir / f"{date_str}.png"
+        shutil.copy2(result.hero_image_path, archive_hero_path)
+        saved_files["archive_hero"] = archive_hero_path
+        logger.info(f"Saved archive hero image to {archive_hero_path}")
 
     # Record hero image path if it exists
     if result.hero_image_path:

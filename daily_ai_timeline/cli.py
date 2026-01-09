@@ -174,9 +174,9 @@ def create_parser() -> argparse.ArgumentParser:
     )
     run_parser.add_argument(
         "--mode",
-        choices=["daily", "realtime"],
+        choices=["daily", "realtime", "weekly"],
         default="daily",
-        help="Run mode: 'daily' (24h lookback) or 'realtime' (1h lookback)",
+        help="Run mode: 'daily' (24h), 'realtime' (1h), or 'weekly' (7 days)",
     )
     run_parser.add_argument(
         "--top",

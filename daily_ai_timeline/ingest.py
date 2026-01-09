@@ -19,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .config import ARXIV_CATEGORIES, HN_KEYWORDS, RSS_FEEDS, Config
+from .config import ARXIV_CATEGORIES, HN_KEYWORDS, REDDIT_SUBREDDITS, RSS_FEEDS, Config
 from .utils import clean_html, hours_since, parse_date
 
 logger = logging.getLogger(__name__)
@@ -276,6 +276,87 @@ def fetch_hackernews(
     return items
 
 
+def fetch_reddit(
+    subreddits: list[str] = REDDIT_SUBREDDITS,
+    max_hours: int = 24,
+    show_progress: bool = True,
+) -> list[NewsItem]:
+    """Fetch AI-related posts from Reddit subreddits via RSS.
+
+    Args:
+        subreddits: List of subreddit names to fetch from
+        max_hours: Maximum age of posts to include
+        show_progress: Whether to show progress bar
+
+    Returns:
+        List of NewsItem objects
+    """
+    items = []
+    seen_urls = set()
+
+    sub_iter = tqdm(subreddits, desc="Fetching Reddit") if show_progress else subreddits
+
+    for subreddit in sub_iter:
+        try:
+            # Use Reddit RSS feed (more reliable than JSON API)
+            rss_url = f"https://www.reddit.com/r/{subreddit}/hot.rss"
+            feed = feedparser.parse(rss_url)
+
+            for entry in feed.entries:
+                # Get the actual link (not the Reddit comments page)
+                url = entry.get("link", "")
+
+                # Skip if already seen
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                # Parse publication date
+                published = None
+                for date_field in ["published", "updated"]:
+                    if hasattr(entry, date_field):
+                        published = parse_date(getattr(entry, date_field))
+                        if published:
+                            break
+
+                if not published:
+                    published = datetime.now(timezone.utc)
+
+                # Skip items older than max_hours
+                if hours_since(published) > max_hours:
+                    continue
+
+                # Extract title (remove subreddit prefix if present)
+                title = entry.get("title", "Untitled")
+
+                # Get author
+                author = entry.get("author", "")
+                if author.startswith("/u/"):
+                    author = author[3:]
+
+                # Extract summary/content
+                summary = ""
+                if hasattr(entry, "summary"):
+                    summary = clean_html(entry.summary)[:200]
+
+                item = NewsItem(
+                    title=title,
+                    url=url,
+                    source=f"Reddit r/{subreddit}",
+                    published=published,
+                    summary=summary if summary else f"From r/{subreddit}",
+                    authors=[author] if author else [],
+                )
+                items.append(item)
+
+        except Exception as e:
+            logger.warning(f"Error fetching Reddit r/{subreddit}: {e}")
+            continue
+
+    logger.info(f"Fetched {len(items)} posts from Reddit")
+    return items
+
+
 def extract_article_content(url: str, max_words: int = 500) -> str:
     """Extract main content from an article URL.
 
@@ -351,16 +432,19 @@ def fetch_all_sources(
 
     Args:
         config: Application configuration
-        mode: Either 'daily' (24h lookback) or 'realtime' (1h lookback)
+        mode: 'daily' (24h), 'realtime' (1h), or 'weekly' (7 days)
         show_progress: Whether to show progress bars
         fetch_content: Whether to fetch full article content
 
     Returns:
         Combined list of NewsItem objects from all sources
     """
-    max_hours = (
-        config.lookback_hours_daily if mode == "daily" else config.lookback_hours_realtime
-    )
+    if mode == "weekly":
+        max_hours = config.lookback_hours_weekly
+    elif mode == "realtime":
+        max_hours = config.lookback_hours_realtime
+    else:
+        max_hours = config.lookback_hours_daily
 
     logger.info(f"Fetching sources with {max_hours}h lookback window")
 
@@ -390,6 +474,14 @@ def fetch_all_sources(
         show_progress=show_progress,
     )
     all_items.extend(hn_items)
+
+    # Reddit
+    reddit_items = fetch_reddit(
+        subreddits=REDDIT_SUBREDDITS,
+        max_hours=max_hours,
+        show_progress=show_progress,
+    )
+    all_items.extend(reddit_items)
 
     # Optionally fetch full content for top items
     if fetch_content:

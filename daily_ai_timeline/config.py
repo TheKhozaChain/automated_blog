@@ -30,6 +30,7 @@ class Config:
     # Mode settings
     lookback_hours_daily: int = 24
     lookback_hours_realtime: int = 1
+    lookback_hours_weekly: int = 168  # 7 days
 
     @classmethod
     def from_env(cls, env_file: Optional[Path] = None) -> "Config":
@@ -49,6 +50,7 @@ class Config:
             output_dir=Path(os.getenv("OUTPUT_DIR", "out")),
             lookback_hours_daily=int(os.getenv("LOOKBACK_HOURS_DAILY", "24")),
             lookback_hours_realtime=int(os.getenv("LOOKBACK_HOURS_REALTIME", "1")),
+            lookback_hours_weekly=int(os.getenv("LOOKBACK_HOURS_WEEKLY", "168")),
         )
 
     def get_preferred_provider(self) -> Optional[str]:
@@ -98,6 +100,12 @@ HN_KEYWORDS = [
     "neural network",
 ]
 
+# Reddit subreddits for AI news
+REDDIT_SUBREDDITS = [
+    "MachineLearning",
+    "artificial",
+]
+
 # Source credibility scores (0-20)
 SOURCE_CREDIBILITY = {
     "OpenAI Blog": 20,
@@ -109,6 +117,8 @@ SOURCE_CREDIBILITY = {
     "The Verge AI": 10,
     "Ars Technica AI": 10,
     "Wired AI": 10,
+    "Reddit r/MachineLearning": 10,
+    "Reddit r/artificial": 8,
     "Hacker News": 8,
 }
 
