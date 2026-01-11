@@ -530,15 +530,16 @@ def render_archive_articles(output_dir: Path):
         render_blog(md_path, html_path, is_archive=True)
 
 
-def serve_blog(port: int = 8000, open_browser: bool = True):
+def serve_blog(port: int = 8000, open_browser: bool = True, output_dir: str = "out"):
     """Serve the blog on localhost.
 
     Args:
         port: Port to serve on
         open_browser: Whether to open browser automatically
+        output_dir: Directory containing the blog files
     """
     # Find the output directory
-    out_dir = Path("out")
+    out_dir = Path(output_dir)
     md_path = out_dir / "today.md"
     html_path = out_dir / "index.html"
 

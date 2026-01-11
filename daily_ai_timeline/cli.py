@@ -123,7 +123,7 @@ def serve_command(args: argparse.Namespace) -> int:
     """
     from .server import serve_blog
 
-    serve_blog(port=args.port, open_browser=not args.no_browser)
+    serve_blog(port=args.port, open_browser=not args.no_browser, output_dir=args.dir)
     return 0
 
 
@@ -220,6 +220,13 @@ def create_parser() -> argparse.ArgumentParser:
         type=int,
         default=8000,
         help="Port to serve on (default: 8000)",
+    )
+    serve_parser.add_argument(
+        "--dir",
+        "-d",
+        type=str,
+        default="out",
+        help="Output directory to serve (default: out)",
     )
     serve_parser.add_argument(
         "--no-browser",
