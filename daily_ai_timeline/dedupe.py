@@ -110,6 +110,7 @@ def deduplicate_items(
 def score_item(
     item: NewsItem,
     reference_time: datetime | None = None,
+    lookback_hours: int = 24,
 ) -> float:
     """Calculate a relevance score for a news item.
 
@@ -122,6 +123,8 @@ def score_item(
     Args:
         item: The NewsItem to score
         reference_time: Reference time for recency calculation (default: now)
+        lookback_hours: The lookback window in hours (24 for daily, 168 for weekly)
+            Used to scale recency scoring appropriately
 
     Returns:
         Numerical score (higher is better)
@@ -132,9 +135,11 @@ def score_item(
     score = 0.0
 
     # Recency score (0-30 points)
-    # Items from the last hour get full points, declining linearly
+    # Scale based on lookback window so items are scored fairly across the period
+    # For daily (24h): items lose ~1.25 points per hour
+    # For weekly (168h): items lose ~0.18 points per hour
     hours_old = hours_since(item.published, reference_time)
-    recency_score = max(0, 30 - hours_old)
+    recency_score = max(0, 30 * (1 - hours_old / lookback_hours))
     score += recency_score
 
     # Source credibility score (0-20 points)
@@ -165,12 +170,14 @@ def score_item(
 def score_and_rank_items(
     items: list[NewsItem],
     top_n: int = 10,
+    lookback_hours: int = 24,
 ) -> list[NewsItem]:
     """Score all items and return the top N ranked by score.
 
     Args:
         items: List of NewsItem objects to score
         top_n: Number of top items to return
+        lookback_hours: The lookback window in hours for recency scoring
 
     Returns:
         List of top N NewsItem objects, sorted by score (descending)
@@ -179,7 +186,7 @@ def score_and_rank_items(
 
     # Score each item
     for item in items:
-        item.score = score_item(item, reference_time)
+        item.score = score_item(item, reference_time, lookback_hours)
 
     # Sort by score (descending) and take top N
     sorted_items = sorted(items, key=lambda x: x.score, reverse=True)
@@ -197,6 +204,7 @@ def process_items(
     items: list[NewsItem],
     top_n: int = 10,
     similarity_threshold: float = TITLE_SIMILARITY_THRESHOLD,
+    lookback_hours: int = 24,
 ) -> list[NewsItem]:
     """Full processing pipeline: deduplicate, score, and rank items.
 
@@ -204,6 +212,8 @@ def process_items(
         items: Raw list of NewsItem objects
         top_n: Number of top items to return
         similarity_threshold: Title similarity threshold for deduplication
+        lookback_hours: The lookback window in hours for recency scoring
+            (24 for daily, 168 for weekly)
 
     Returns:
         List of top N deduplicated and scored NewsItem objects
@@ -214,6 +224,6 @@ def process_items(
     unique_items = deduplicate_items(items, similarity_threshold)
 
     # Step 2: Score and rank
-    top_items = score_and_rank_items(unique_items, top_n)
+    top_items = score_and_rank_items(unique_items, top_n, lookback_hours)
 
     return top_items

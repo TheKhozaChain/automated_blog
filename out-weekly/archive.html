@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive - Daily AI Timeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 60px 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        header .brand {
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #64ffda;
+            margin-bottom: 20px;
+        }
+
+        header .brand a {
+            color: #64ffda;
+            text-decoration: none;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #8892b0;
+            font-style: italic;
+        }
+
+        .archive-list {
+            list-style: none;
+        }
+
+        .archive-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .archive-item:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(100, 255, 218, 0.2);
+        }
+
+        .archive-item a {
+            text-decoration: none;
+        }
+
+        .archive-date {
+            font-size: 0.85rem;
+            color: #64ffda;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .archive-headline {
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .archive-meta {
+            font-size: 0.9rem;
+            color: #8892b0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: #64ffda;
+            text-decoration: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #8892b0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .archive-item {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p class="brand"><a href="index.html">Daily AI Timeline</a></p>
+            <h1>Archive</h1>
+            <p class="subtitle">Past editions of the Daily AI Timeline</p>
+        </header>
+
+        <ul class="archive-list">
+            
+            <li class="archive-item">
+                <a href="archive/2026-01-12.html">
+                    <p class="archive-date">Monday, January 12, 2026</p>
+                    <h2 class="archive-headline">When AI Meets Medicine, Mail, and the Law</h2>
+                    <p class="archive-meta">4 min read · 10 stories</p>
+                </a>
+            </li>
+
+        </ul>
+
+        <footer>
+            <p>Generated with <a href="#">Daily AI Timeline</a></p>
+        </footer>
+    </div>
+</body>
+</html>

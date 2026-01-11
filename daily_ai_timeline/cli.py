@@ -72,7 +72,14 @@ def run_command(args: argparse.Namespace) -> int:
 
         # Step 2: Deduplicate and score
         logger.info("Step 2/3: Processing and ranking items...")
-        top_items = process_items(items, top_n=config.top_n_items)
+        # Get lookback hours based on mode for proper recency scoring
+        if args.mode == "weekly":
+            lookback_hours = config.lookback_hours_weekly
+        elif args.mode == "realtime":
+            lookback_hours = config.lookback_hours_realtime
+        else:
+            lookback_hours = config.lookback_hours_daily
+        top_items = process_items(items, top_n=config.top_n_items, lookback_hours=lookback_hours)
 
         if not top_items:
             logger.warning("No items after processing. Exiting.")

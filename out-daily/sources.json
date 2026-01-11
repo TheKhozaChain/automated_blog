@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-01-12T07:12:08.204982+11:00",
+  "headline": "Medicine, Mailboxes, and the New Model Mandates",
+  "reading_time_minutes": 4,
+  "hero_image": "out-daily/hero.png",
+  "item_count": 10,
+  "items": [
+    {
+      "title": "Google pulls AI overviews for some medical searches",
+      "url": "https://www.theverge.com/news/860356/google-pulls-alarming-dangerous-medical-ai-overviews",
+      "source": "The Verge AI",
+      "published": "2026-01-11T14:19:40-05:00",
+      "summary": "Earlier this month, The Guardian published an investigation that showed Google was serving up misleading and outright false information via its AI overviews in response to certain medical inquiries. Now those results appear to have been removed. According to the original report: In one case that experts described as \"really dangerous\", Google wrongly advised people [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 41.90236676875
+    },
+    {
+      "title": "Google removes AI Overviews for certain medical queries",
+      "url": "https://techcrunch.com/2026/01/11/google-removes-ai-overviews-for-certain-medical-queries/",
+      "source": "TechCrunch AI",
+      "published": "2026-01-11T17:56:41+00:00",
+      "summary": "This follows an investigation by the Guardian that found Google AI Overviews offering misleading information in response to some health-related queries.",
+      "content": "",
+      "authors": [],
+      "score": 39.17354732430556
+    },
+    {
+      "title": "[P] PerpetualBooster: A new gradient boosting library that enables O(n) continual learning and out-performs AutoGluon on tabular benchmarks.",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1qa351n/p_perpetualbooster_a_new_gradient_boosting/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T16:08:02+00:00",
+      "summary": "Hi everyone, I’m part of the team that developed PerpetualBooster, a gradient boosting algorithm designed to solve the &quot;forgetting&quot; and &quot;retraining&quot; bottlenecks in traditional GBDT",
+      "content": "",
+      "authors": [
+        "mutlu_simsek"
+      ],
+      "score": 37.91000565763889
+    },
+    {
+      "title": "Song detection including release date",
+      "url": "https://www.reddit.com/r/artificial/comments/1qa5ccq/song_detection_including_release_date/",
+      "source": "Reddit r/artificial",
+      "published": "2026-01-11T17:31:11+00:00",
+      "summary": "I have an old collection of music around 20-30yo on my hard drive and some of it is unnamed or other missing info. I've slowly started sorting through but by far the most time consuming thing is eithe",
+      "content": "",
+      "authors": [
+        "stickywinger"
+      ],
+      "score": 37.64229732430556
+    },
+    {
+      "title": "Google’s AI Inbox could be a glimpse of Gmail’s future",
+      "url": "https://www.theverge.com/tech/859864/google-gmail-ai-inbox-hands-on",
+      "source": "The Verge AI",
+      "published": "2026-01-11T10:30:00-05:00",
+      "summary": "This week, Google announced a new AI Inbox view for Gmail that replaces the traditional list of emails with an AI-generated list of to-dos and topics to track based on what's in your inbox. It's not widely available yet, but I have access, and in the few hours I've spent messing around with it, I [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 37.11764454652778
+    },
+    {
+      "title": "Anthropic: Developing a Claude Code competitor using Claude Code is banned",
+      "url": "https://twitter.com/SIGKITTEN/status/2009697031422652461",
+      "source": "Hacker News",
+      "published": "2026-01-11T19:07:08+00:00",
+      "summary": "Points: 56, Comments: 25",
+      "content": "",
+      "authors": [
+        "behnamoh"
+      ],
+      "score": 36.641255657638894
+    },
+    {
+      "title": "AI insiders seek to poison the data that feeds them",
+      "url": "https://www.reddit.com/r/artificial/comments/1qa7bpv/ai_insiders_seek_to_poison_the_data_that_feeds/",
+      "source": "Reddit r/artificial",
+      "published": "2026-01-11T18:44:44+00:00",
+      "summary": "&#32; submitted by &#32; /u/RNSAFFN [link] &#32; [comments]",
+      "content": "",
+      "authors": [
+        "RNSAFFN"
+      ],
+      "score": 36.174588990972225
+    },
+    {
+      "title": "[R] Updated my machine learning note: with DeepSeek's new mHC",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1qa0taf/r_updated_my_machine_learning_note_with_deepseeks/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T14:34:11+00:00",
+      "summary": "Please find it in my notes repository: https://github.com/roboticcam/machine-learning-notes It's under the section: &quot;Transformer with PyTorch&quot; &#32; submitted by &#32; /u/Delicious_Screen_78",
+      "content": "",
+      "authors": [
+        "Delicious_Screen_789"
+      ],
+      "score": 35.95479732430556
+    },
+    {
+      "title": "[D] During long training sessions, how do you manage to get your code to work in the first couple of tries?",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1qa46hz/d_during_long_training_sessions_how_do_you_manage/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T16:47:58+00:00",
+      "summary": "I've tried doing sanity checks and they work great for the most part, but what if there is just a part of the data, or an instance where the model fails? How do you watch out for something like that s",
+      "content": "",
+      "authors": [
+        "Specialist-Pool-6962"
+      ],
+      "score": 35.74195010208334
+    },
+    {
+      "title": "Indonesia and Malaysia block Grok over non-consensual, sexualized deepfakes",
+      "url": "https://techcrunch.com/2026/01/11/indonesia-blocks-grok-over-non-consensual-sexualized-deepfakes/",
+      "source": "TechCrunch AI",
+      "published": "2026-01-11T15:07:49+00:00",
+      "summary": "Indonesian officials said Saturday that they are temporarily blocking access to xAI’s chatbot Grok.",
+      "content": "",
+      "authors": [],
+      "score": 35.65549176875
+    }
+  ]
+}

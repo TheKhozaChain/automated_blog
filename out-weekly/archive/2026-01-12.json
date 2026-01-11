@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-01-12T10:38:04.215899+11:00",
+  "headline": "When AI Grows Arms, It Also Grows Consequences",
+  "reading_time_minutes": 4,
+  "hero_image": "out-weekly/hero.png",
+  "item_count": 10,
+  "items": [
+    {
+      "title": "CES 2026 was all about ‘physical AI’ and robots, robots, robots",
+      "url": "https://techcrunch.com/podcast/ces-2026-was-all-about-physical-ai-and-robots-robots-robots/",
+      "source": "TechCrunch AI",
+      "published": "2026-01-09T18:02:09+00:00",
+      "summary": "After years of chatbots and image generators, AI is finally leaving the screen. At CES 2026, that shift became impossible to ignore.&#160; The annual tech showcase in Las Vegas was dominated by &#8220;physical AI&#8221; and robotics, from Boston Dynamic&#8217;s newly redesigned Atlas humanoid robot to AI-powered ice makers (yes, really). The companies in attendance clearly want consumers [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 45.42802085386904
+    },
+    {
+      "title": "[D] Anyone running into KV cache / memory bandwidth limits with long-context inference?",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1q9syiz/d_anyone_running_into_kv_cache_memory_bandwidth/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T07:15:56+00:00",
+      "summary": "Hey guys, I’m working on optimizing inference for transformer models and keep seeing memory bandwidth become the bottleneck well before compute, especially once context length gets past ~8k tokens. A ",
+      "content": "",
+      "authors": [
+        "biletnikoff_"
+      ],
+      "score": 43.07618553640873
+    },
+    {
+      "title": "The latest on Grok&#8217;s gross AI deepfakes problem",
+      "url": "https://www.theverge.com/news/859715/x-grok-ai-deepfakes",
+      "source": "The Verge AI",
+      "published": "2026-01-09T14:13:32-05:00",
+      "summary": "The launch of an AI image editing feature on xAI&#8217;s Grok has caused chaos on X after it was used to generate a flood of nonconsensual sexualized deepfakes. As Hayden Field wrote, “screenshots show Grok complying with requests to put real women in lingerie and make them spread their legs, and to put small children [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 42.640471250694446
+    },
+    {
+      "title": "Google pulls AI overviews for some medical searches",
+      "url": "https://www.theverge.com/news/860356/google-pulls-alarming-dangerous-medical-ai-overviews",
+      "source": "The Verge AI",
+      "published": "2026-01-11T14:19:40-05:00",
+      "summary": "Earlier this month, The Guardian published an investigation that showed Google was serving up misleading and outright false information via its AI overviews in response to certain medical inquiries. Now those results appear to have been removed. According to the original report: In one case that experts described as \"really dangerous\", Google wrongly advised people [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 42.23015379037699
+    },
+    {
+      "title": "[P] PerpetualBooster: A new gradient boosting library that enables O(n) continual learning and out-performs AutoGluon on tabular benchmarks.",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1qa351n/p_perpetualbooster_a_new_gradient_boosting/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T16:08:02+00:00",
+      "summary": "Hi everyone, I’m part of the team that developed PerpetualBooster, a gradient boosting algorithm designed to solve the &quot;forgetting&quot; and &quot;retraining&quot; bottlenecks in traditional GBDT",
+      "content": "",
+      "authors": [
+        "mutlu_simsek"
+      ],
+      "score": 41.65981648878969
+    },
+    {
+      "title": "Google’s AI Inbox could be a glimpse of Gmail’s future",
+      "url": "https://www.theverge.com/tech/859864/google-gmail-ai-inbox-hands-on",
+      "source": "The Verge AI",
+      "published": "2026-01-11T10:30:00-05:00",
+      "summary": "This week, Google announced a new AI Inbox view for Gmail that replaces the traditional list of emails with an AI-generated list of to-dos and topics to track based on what's in your inbox. It's not widely available yet, but I have access, and in the few hours I've spent messing around with it, I [&#8230;]",
+      "content": "",
+      "authors": [],
+      "score": 41.54662204434524
+    },
+    {
+      "title": "CES 2026: Follow live for the best, weirdest, most interesting tech as this robot and AI-heavy event wraps up",
+      "url": "https://techcrunch.com/storyline/ces-2026-follow-live-for-the-best-weirdest-most-interesting-tech-as-this-robot-and-ai-heavy-event-wraps/",
+      "source": "TechCrunch AI",
+      "published": "2026-01-09T17:57:00+00:00",
+      "summary": "CES 2026, the annual consumer tech conference held in Las Vegas, is here. And lucky for you, we have TechCrunch editors and reporters on the ground to cover the news, scout out the interesting, weird, and relevant (and some not so relevant) tech, and of course the people working on it. AI has been at the center of most of the action, whether it's Nvidia and AMD's announcements or Amazon and Google's push for its use in the physical world. Follow our live updates as we share all the reveals and n",
+      "content": "",
+      "authors": [],
+      "score": 41.41269347291667
+    },
+    {
+      "title": "[R] Updated my machine learning note: with DeepSeek's new mHC",
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1qa0taf/r_updated_my_machine_learning_note_with_deepseeks/",
+      "source": "Reddit r/MachineLearning",
+      "published": "2026-01-11T14:34:11+00:00",
+      "summary": "Please find it in my notes repository: https://github.com/roboticcam/machine-learning-notes It's under the section: &quot;Transformer with PyTorch&quot; &#32; submitted by &#32; /u/Delicious_Screen_78",
+      "content": "",
+      "authors": [
+        "Delicious_Screen_789"
+      ],
+      "score": 41.38050101259921
+    },
+    {
+      "title": "How Humanoids Took Center Stage at CES 2026",
+      "url": "https://www.reddit.com/r/artificial/comments/1q8dy42/how_humanoids_took_center_stage_at_ces_2026/",
+      "source": "Reddit r/artificial",
+      "published": "2026-01-09T17:07:59+00:00",
+      "summary": "The article compares Consumer Electronics Show in 2020 and 2026 to show the rise of humanoid robots at the event. In 2020, a humanoid robot appearance was treated as a novelty and stood out at a show ",
+      "content": "",
+      "authors": [
+        "Responsible-Grass452"
+      ],
+      "score": 41.26681053640873
+    },
+    {
+      "title": "Google removes AI Overviews for certain medical queries",
+      "url": "https://techcrunch.com/2026/01/11/google-removes-ai-overviews-for-certain-medical-queries/",
+      "source": "TechCrunch AI",
+      "published": "2026-01-11T17:56:41+00:00",
+      "summary": "This follows an investigation by the Guardian that found Google AI Overviews offering misleading information in response to some health-related queries.",
+      "content": "",
+      "authors": [],
+      "score": 40.98317958402778
+    }
+  ]
+}
