@@ -1,0 +1,95 @@
+# AI News - Daily AI Timeline
+# This is the default niche configuration
+
+name: "AI News"
+description: "Daily AI timeline posts covering the latest in artificial intelligence"
+output_dir: "out"
+
+# Branding
+branding:
+  site_name: "Daily AI Timeline"
+  tagline: "Your daily digest of AI news and research"
+
+# RSS Feed sources
+rss_feeds:
+  OpenAI Blog: "https://openai.com/blog/rss.xml"
+  Anthropic Blog: "https://www.anthropic.com/rss.xml"
+  DeepMind Blog: "https://deepmind.google/blog/rss.xml"
+  The Verge AI: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
+  TechCrunch AI: "https://techcrunch.com/category/artificial-intelligence/feed/"
+  MIT Tech Review AI: "https://www.technologyreview.com/topic/artificial-intelligence/feed"
+  Ars Technica AI: "https://feeds.arstechnica.com/arstechnica/technology-lab"
+  Wired AI: "https://www.wired.com/feed/tag/ai/latest/rss"
+
+# arXiv categories to fetch
+arxiv_categories:
+  - "cs.AI"
+  - "cs.LG"
+
+# Hacker News search keywords
+hn_keywords:
+  - "AI"
+  - "OpenAI"
+  - "Anthropic"
+  - "Claude"
+  - "Gemini"
+  - "NVIDIA"
+  - "LLM"
+  - "GPT"
+  - "machine learning"
+  - "neural network"
+
+# Reddit subreddits
+reddit_subreddits:
+  - "MachineLearning"
+  - "artificial"
+
+# Source credibility scores (0-20, higher = more credible)
+source_credibility:
+  OpenAI Blog: 20
+  Anthropic Blog: 20
+  DeepMind Blog: 20
+  arXiv: 18
+  MIT Tech Review AI: 15
+  TechCrunch AI: 12
+  The Verge AI: 10
+  Ars Technica AI: 10
+  Wired AI: 10
+  Reddit r/MachineLearning: 10
+  Reddit r/artificial: 8
+  Hacker News: 8
+
+# Keywords that boost item scores
+scoring_keywords:
+  - "release"
+  - "launch"
+  - "benchmark"
+  - "acquisition"
+  - "policy"
+  - "compute"
+  - "robot"
+  - "AGI"
+  - "breakthrough"
+  - "billion"
+  - "million"
+  - "partnership"
+  - "regulation"
+  - "safety"
+  - "alignment"
+
+# Prompt customization
+prompts:
+  # Style guidance for the LLM
+  voice: |
+    Write in the style of a thoughtful technology analyst. 
+    Be insightful but accessible. Connect dots between stories.
+    Avoid hype and buzzwords. Focus on implications, not just announcements.
+  
+  # Article type
+  article_type: "news analysis"
+  
+  # Target audience
+  audience: "AI practitioners, researchers, and technology leaders"
+  
+  # Geographic focus (optional)
+  geographic_focus: null

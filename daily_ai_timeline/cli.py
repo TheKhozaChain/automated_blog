@@ -3,7 +3,7 @@
 Usage:
     python -m daily_ai_timeline run --mode daily
     python -m daily_ai_timeline run --mode realtime
-    python -m daily_ai_timeline run --top 15
+    python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
 """
 
 import argparse
@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .config import Config
+from .config import Config, NicheConfig
 from .dedupe import process_items
 from .generator import run_generation_pipeline
 from .ingest import fetch_all_sources
@@ -39,11 +39,23 @@ def run_command(args: argparse.Namespace) -> int:
     # Load configuration
     config = Config.from_env()
 
-    # Override config with CLI arguments
+    # Load niche configuration
+    niche_name = getattr(args, "niche", None) or "ai_news"
+    try:
+        niche = NicheConfig.load(niche_name)
+        logger.info(f"Loaded niche: {niche.name}")
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        return 1
+
+    # Override config with CLI arguments (CLI takes precedence over niche)
     if args.top:
         config.top_n_items = args.top
     if args.output:
         config.output_dir = Path(args.output)
+    else:
+        # Use niche's default output directory
+        config.output_dir = Path(niche.output_dir)
 
     # Validate configuration
     errors = config.validate()
@@ -64,6 +76,7 @@ def run_command(args: argparse.Namespace) -> int:
             mode=args.mode,
             show_progress=not args.quiet,
             fetch_content=args.fetch_content,
+            niche=niche,
         )
 
         if not items:
@@ -79,7 +92,12 @@ def run_command(args: argparse.Namespace) -> int:
             lookback_hours = config.lookback_hours_realtime
         else:
             lookback_hours = config.lookback_hours_daily
-        top_items = process_items(items, top_n=config.top_n_items, lookback_hours=lookback_hours)
+        top_items = process_items(
+            items,
+            top_n=config.top_n_items,
+            lookback_hours=lookback_hours,
+            niche=niche,
+        )
 
         if not top_items:
             logger.warning("No items after processing. Exiting.")
@@ -95,6 +113,7 @@ def run_command(args: argparse.Namespace) -> int:
             items=top_items,
             config=config,
             date=current_time,
+            niche=niche,
         )
 
         # Report success
@@ -135,7 +154,7 @@ def serve_command(args: argparse.Namespace) -> int:
 
 
 def sources_command(args: argparse.Namespace) -> int:
-    """List configured sources without fetching.
+    """List configured sources for a niche.
 
     Args:
         args: Parsed command-line arguments
@@ -143,19 +162,65 @@ def sources_command(args: argparse.Namespace) -> int:
     Returns:
         Exit code
     """
-    from .config import ARXIV_CATEGORIES, HN_KEYWORDS, RSS_FEEDS
+    niche_name = getattr(args, "niche", None) or "ai_news"
+    try:
+        niche = NicheConfig.load(niche_name)
+    except FileNotFoundError as e:
+        print(str(e))
+        return 1
 
-    print("Configured Sources")
-    print("=" * 40)
+    print(f"Sources for niche: {niche.name}")
+    print("=" * 50)
 
     print("\nRSS Feeds:")
-    for name, url in RSS_FEEDS.items():
+    for name, url in niche.rss_feeds.items():
         print(f"  - {name}")
         print(f"    {url}")
 
-    print(f"\narXiv Categories: {', '.join(ARXIV_CATEGORIES)}")
+    if niche.arxiv_categories:
+        print(f"\narXiv Categories: {', '.join(niche.arxiv_categories)}")
 
-    print(f"\nHacker News Keywords: {', '.join(HN_KEYWORDS)}")
+    if niche.hn_keywords:
+        print(f"\nHacker News Keywords: {', '.join(niche.hn_keywords)}")
+
+    if niche.reddit_subreddits:
+        print(f"\nReddit Subreddits: {', '.join(niche.reddit_subreddits)}")
+
+    print(f"\nScoring Keywords: {', '.join(niche.scoring_keywords[:10])}...")
+
+    return 0
+
+
+def niches_command(args: argparse.Namespace) -> int:
+    """List available niche configurations.
+
+    Args:
+        args: Parsed command-line arguments
+
+    Returns:
+        Exit code
+    """
+    available = NicheConfig.list_available()
+
+    if not available:
+        print("No niches found. Create YAML files in the niches/ directory.")
+        return 1
+
+    print("Available Niches")
+    print("=" * 50)
+
+    for niche_name in sorted(available):
+        try:
+            niche = NicheConfig.load(niche_name)
+            print(f"\n  {niche_name}")
+            print(f"    Name: {niche.name}")
+            print(f"    Description: {niche.description}")
+            print(f"    Output: {niche.output_dir}")
+        except Exception as e:
+            print(f"\n  {niche_name} (error loading: {e})")
+
+    print("\n" + "=" * 50)
+    print("Usage: python -m daily_ai_timeline run --niche <name>")
 
     return 0
 
@@ -180,6 +245,13 @@ def create_parser() -> argparse.ArgumentParser:
         help="Fetch sources and generate posts",
     )
     run_parser.add_argument(
+        "--niche",
+        "-n",
+        type=str,
+        default="ai_news",
+        help="Niche configuration to use (default: ai_news)",
+    )
+    run_parser.add_argument(
         "--mode",
         choices=["daily", "realtime", "weekly"],
         default="daily",
@@ -194,7 +266,7 @@ def create_parser() -> argparse.ArgumentParser:
         "--output",
         "-o",
         type=str,
-        help="Output directory (default: out/)",
+        help="Output directory (default: from niche config)",
     )
     run_parser.add_argument(
         "--fetch-content",
@@ -212,9 +284,23 @@ def create_parser() -> argparse.ArgumentParser:
     # Sources command
     sources_parser = subparsers.add_parser(
         "sources",
-        help="List configured news sources",
+        help="List configured news sources for a niche",
+    )
+    sources_parser.add_argument(
+        "--niche",
+        "-n",
+        type=str,
+        default="ai_news",
+        help="Niche to show sources for (default: ai_news)",
     )
     sources_parser.set_defaults(func=sources_command)
+
+    # Niches command
+    niches_parser = subparsers.add_parser(
+        "niches",
+        help="List available niche configurations",
+    )
+    niches_parser.set_defaults(func=niches_command)
 
     # Serve command
     serve_parser = subparsers.add_parser(

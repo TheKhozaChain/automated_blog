@@ -1,0 +1,122 @@
+# AI Jobs Australia
+# Tracks AI and ML job opportunities in Australia
+
+name: "AI Jobs Australia"
+description: "Daily digest of AI and machine learning job opportunities in Australia"
+output_dir: "out-jobs-au"
+
+# Branding
+branding:
+  site_name: "AI Jobs Australia"
+  tagline: "Your daily digest of AI career opportunities down under"
+
+# RSS Feed sources - Job boards and company career pages
+rss_feeds:
+  # Note: Many job boards don't have RSS. You may need to use their APIs or scrape.
+  # These are examples - replace with actual working feeds
+  Atlassian Careers: "https://www.atlassian.com/company/careers/feed"
+  Canva Careers: "https://www.canva.com/careers/feed"  # Example - verify URL
+  # LinkedIn Jobs don't have RSS, but you can set up alerts that email you
+  # Indeed AU: Would need API access
+  # Seek: Would need API access
+
+# arXiv - disabled for job-focused niche
+arxiv_categories: []
+
+# Hacker News - job-related keywords
+hn_keywords:
+  - "hiring Australia"
+  - "AI jobs"
+  - "ML engineer"
+  - "remote Australia"
+  - "Who is hiring"
+  - "machine learning job"
+  - "data scientist"
+  - "Sydney"
+  - "Melbourne"
+
+# Reddit subreddits - career and Australia focused
+reddit_subreddits:
+  - "cscareerquestionsOCE"   # Australia/Oceania tech careers
+  - "AusFinance"             # Often discusses job market
+  - "australia"              # General AU news including jobs
+  - "melbourne"              # Melbourne-specific
+  - "sydney"                 # Sydney-specific
+  - "MachineLearning"        # Filter for job posts
+
+# Source credibility scores
+source_credibility:
+  Atlassian Careers: 20
+  Canva Careers: 20
+  Seek: 18
+  LinkedIn: 18
+  Indeed: 15
+  Reddit r/cscareerquestionsOCE: 12
+  Reddit r/AusFinance: 10
+  Reddit r/australia: 8
+  Reddit r/melbourne: 8
+  Reddit r/sydney: 8
+  Reddit r/MachineLearning: 10
+  Hacker News: 10
+
+# Keywords that boost item scores - job market focused
+scoring_keywords:
+  # Job types
+  - "hiring"
+  - "job"
+  - "career"
+  - "position"
+  - "opening"
+  - "opportunity"
+  - "remote"
+  - "hybrid"
+  - "full-time"
+  - "contract"
+  
+  # Roles
+  - "machine learning engineer"
+  - "data scientist"
+  - "AI engineer"
+  - "ML engineer"
+  - "research scientist"
+  - "senior"
+  - "lead"
+  - "principal"
+  - "staff"
+  
+  # Companies
+  - "Atlassian"
+  - "Canva"
+  - "Google"
+  - "Meta"
+  - "Amazon"
+  - "Microsoft"
+  - "startup"
+  
+  # Locations
+  - "Sydney"
+  - "Melbourne"
+  - "Brisbane"
+  - "Perth"
+  - "Australia"
+  - "remote"
+  
+  # Compensation
+  - "salary"
+  - "$"
+  - "equity"
+  - "stock"
+
+# Prompt customization
+prompts:
+  voice: |
+    Write as a career advisor and job market analyst.
+    Be practical and actionable. Focus on what job seekers need to know.
+    Highlight salary ranges when available. Note remote vs in-office requirements.
+    Connect trends across multiple job postings.
+  
+  article_type: "job market report"
+  
+  audience: "AI and ML professionals seeking opportunities in Australia"
+  
+  geographic_focus: "Australia"

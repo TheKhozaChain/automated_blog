@@ -7,7 +7,9 @@ Generates a single unified article with inline hyperlinks as commentary.
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Optional
 
+from .config import NicheConfig
 from .ingest import NewsItem
 from .utils import format_date_for_title
 
@@ -97,15 +99,53 @@ def format_items_for_prompt(items: list[NewsItem]) -> str:
     return "\n\n".join(formatted_lines)
 
 
+def build_system_prompt(niche: Optional[NicheConfig] = None) -> str:
+    """Build the system prompt, customized for the niche if provided.
+
+    Args:
+        niche: Optional niche configuration
+
+    Returns:
+        System prompt string
+    """
+    # Start with base system prompt
+    base = SYSTEM_PROMPT
+
+    if niche:
+        # Add niche-specific customization
+        niche_context = f"""
+
+## NICHE-SPECIFIC CONTEXT
+
+You are writing for: {niche.name}
+Target audience: {niche.audience}
+Article type: {niche.article_type}
+"""
+        if niche.geographic_focus:
+            niche_context += f"Geographic focus: {niche.geographic_focus}\n"
+
+        if niche.voice:
+            niche_context += f"""
+## VOICE GUIDANCE
+
+{niche.voice}
+"""
+        return base + niche_context
+
+    return base
+
+
 def build_prompt(
     items: list[NewsItem],
     date: datetime | None = None,
+    niche: Optional[NicheConfig] = None,
 ) -> tuple[str, str]:
     """Build system and user prompts for LLM generation.
 
     Args:
         items: List of NewsItem objects to write about
         date: Date for the post (defaults to today)
+        niche: Optional niche configuration for customization
 
     Returns:
         Tuple of (system_prompt, user_prompt)
@@ -116,9 +156,17 @@ def build_prompt(
     formatted_date = format_date_for_title(date)
     formatted_items = format_items_for_prompt(items)
 
+    # Build system prompt with niche customization
+    system_prompt = build_system_prompt(niche)
+
+    # Customize the topic description based on niche
+    topic = "AI/tech news"
+    if niche:
+        topic = f"{niche.name} items"
+
     user_prompt = f"""Today's date is: {formatted_date}
 
-Here are the top AI/tech news items to cover. For each item, embed the URL as an inline link within descriptive text:
+Here are the top {topic} to cover. For each item, embed the URL as an inline link within descriptive text:
 
 {formatted_items}
 
@@ -133,4 +181,4 @@ Write a unified article following the style guidelines. Remember:
 
 Write the article now."""
 
-    return SYSTEM_PROMPT, user_prompt
+    return system_prompt, user_prompt

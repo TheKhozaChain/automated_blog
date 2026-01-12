@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from typing import Optional
 
-from .config import SCORING_KEYWORDS, SOURCE_CREDIBILITY
+from .config import SCORING_KEYWORDS, SOURCE_CREDIBILITY, NicheConfig
 from .ingest import NewsItem
 from .utils import extract_numbers, hours_since, normalize_url
 
@@ -111,6 +111,8 @@ def score_item(
     item: NewsItem,
     reference_time: datetime | None = None,
     lookback_hours: int = 24,
+    source_credibility: dict[str, int] | None = None,
+    scoring_keywords: list[str] | None = None,
 ) -> float:
     """Calculate a relevance score for a news item.
 
@@ -125,12 +127,20 @@ def score_item(
         reference_time: Reference time for recency calculation (default: now)
         lookback_hours: The lookback window in hours (24 for daily, 168 for weekly)
             Used to scale recency scoring appropriately
+        source_credibility: Dict mapping source names to credibility scores
+        scoring_keywords: List of keywords that boost scores
 
     Returns:
         Numerical score (higher is better)
     """
     if reference_time is None:
         reference_time = datetime.now(timezone.utc)
+
+    # Use defaults if not provided
+    if source_credibility is None:
+        source_credibility = SOURCE_CREDIBILITY
+    if scoring_keywords is None:
+        scoring_keywords = SCORING_KEYWORDS
 
     score = 0.0
 
@@ -143,7 +153,7 @@ def score_item(
     score += recency_score
 
     # Source credibility score (0-20 points)
-    credibility_score = SOURCE_CREDIBILITY.get(item.source, 5)
+    credibility_score = source_credibility.get(item.source, 5)
     score += credibility_score
 
     # Numbers present score (0-10 points)
@@ -160,7 +170,7 @@ def score_item(
     combined = f"{title_lower} {summary_lower}"
 
     keyword_matches = sum(
-        1 for kw in SCORING_KEYWORDS if kw.lower() in combined
+        1 for kw in scoring_keywords if kw.lower() in combined
     )
     score += min(15, keyword_matches * 3)
 
@@ -171,6 +181,7 @@ def score_and_rank_items(
     items: list[NewsItem],
     top_n: int = 10,
     lookback_hours: int = 24,
+    niche: NicheConfig | None = None,
 ) -> list[NewsItem]:
     """Score all items and return the top N ranked by score.
 
@@ -178,15 +189,26 @@ def score_and_rank_items(
         items: List of NewsItem objects to score
         top_n: Number of top items to return
         lookback_hours: The lookback window in hours for recency scoring
+        niche: Niche configuration for scoring (uses defaults if None)
 
     Returns:
         List of top N NewsItem objects, sorted by score (descending)
     """
     reference_time = datetime.now(timezone.utc)
 
+    # Get scoring config from niche or use defaults
+    source_credibility = niche.source_credibility if niche else None
+    scoring_keywords = niche.scoring_keywords if niche else None
+
     # Score each item
     for item in items:
-        item.score = score_item(item, reference_time, lookback_hours)
+        item.score = score_item(
+            item,
+            reference_time,
+            lookback_hours,
+            source_credibility,
+            scoring_keywords,
+        )
 
     # Sort by score (descending) and take top N
     sorted_items = sorted(items, key=lambda x: x.score, reverse=True)
@@ -205,6 +227,7 @@ def process_items(
     top_n: int = 10,
     similarity_threshold: float = TITLE_SIMILARITY_THRESHOLD,
     lookback_hours: int = 24,
+    niche: NicheConfig | None = None,
 ) -> list[NewsItem]:
     """Full processing pipeline: deduplicate, score, and rank items.
 
@@ -214,6 +237,7 @@ def process_items(
         similarity_threshold: Title similarity threshold for deduplication
         lookback_hours: The lookback window in hours for recency scoring
             (24 for daily, 168 for weekly)
+        niche: Niche configuration for scoring (uses defaults if None)
 
     Returns:
         List of top N deduplicated and scored NewsItem objects
@@ -224,6 +248,6 @@ def process_items(
     unique_items = deduplicate_items(items, similarity_threshold)
 
     # Step 2: Score and rank
-    top_items = score_and_rank_items(unique_items, top_n, lookback_hours)
+    top_items = score_and_rank_items(unique_items, top_n, lookback_hours, niche)
 
     return top_items

@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from .config import Config
+from .config import Config, NicheConfig
 from .ingest import NewsItem
 from .prompt import build_prompt
 from .utils import calculate_reading_time, ensure_output_dir, save_json, save_text
@@ -252,6 +252,7 @@ def generate_article(
     items: list[NewsItem],
     config: Config,
     date: Optional[datetime] = None,
+    niche: Optional[NicheConfig] = None,
 ) -> GeneratedArticle:
     """Generate a unified article from the given news items.
 
@@ -259,6 +260,7 @@ def generate_article(
         items: List of NewsItem objects to write about
         config: Application configuration
         date: Date for the post (defaults to today)
+        niche: Optional niche configuration for customization
 
     Returns:
         GeneratedArticle container
@@ -270,7 +272,7 @@ def generate_article(
 
     # Generate the unified article
     logger.info("Generating article with inline links...")
-    system_prompt, user_prompt = build_prompt(items, date)
+    system_prompt, user_prompt = build_prompt(items, date, niche)
     article = provider.generate(system_prompt, user_prompt, max_tokens=3000)
 
     # Extract headline from the article
@@ -368,6 +370,7 @@ def run_generation_pipeline(
     config: Config,
     date: Optional[datetime] = None,
     generate_image: bool = True,
+    niche: Optional[NicheConfig] = None,
 ) -> tuple[GeneratedArticle, dict[str, Path]]:
     """Run the complete generation pipeline.
 
@@ -376,12 +379,13 @@ def run_generation_pipeline(
         config: Application configuration
         date: Date for the post (defaults to today)
         generate_image: Whether to generate a hero image with DALL-E
+        niche: Optional niche configuration for customization
 
     Returns:
         Tuple of (GeneratedArticle, saved file paths)
     """
     # Generate the article
-    result = generate_article(items, config, date)
+    result = generate_article(items, config, date, niche)
 
     # Generate hero image if enabled
     if generate_image:

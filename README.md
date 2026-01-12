@@ -12,6 +12,7 @@ Automate daily AI timeline posts in the style of Dr Alex Wissner-Gross. This too
 - **Editorial headlines**: Catchy, memorable headlines generated for each post
 - **Multiple output formats**: X (with thread support), LinkedIn, full markdown
 - **Daily & Weekly modes**: Generate 24-hour summaries or 7-day roundups
+- **Niche System**: Create multiple blogs for different topics/industries using YAML configs
 
 ---
 
@@ -29,6 +30,97 @@ python -m daily_ai_timeline serve
 ```
 
 Then open **http://localhost:8000** in your browser.
+
+---
+
+## Niche System - Multiple Topics from One Codebase
+
+Create blogs for different topics/industries without copying the codebase. Each niche defines its own sources, scoring keywords, and prompt style.
+
+### Available Niches
+
+```bash
+# List all available niches
+python -m daily_ai_timeline niches
+```
+
+### Running a Specific Niche
+
+```bash
+# Run the AI News niche (default)
+python -m daily_ai_timeline run --niche ai_news --mode daily
+
+# Run the AI Jobs Australia niche
+python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
+
+# View sources for a niche
+python -m daily_ai_timeline sources --niche ai_jobs_au
+```
+
+### Creating a New Niche
+
+1. Create a YAML file in the `niches/` directory:
+
+```yaml
+# niches/my_niche.yaml
+name: "My Custom Niche"
+description: "Daily digest of my topic"
+output_dir: "out-my-niche"
+
+branding:
+  site_name: "My Custom Blog"
+  tagline: "Your daily digest of my topic"
+
+# RSS feeds to fetch from
+rss_feeds:
+  Source Name: "https://example.com/feed.xml"
+
+# arXiv categories (empty list to disable)
+arxiv_categories: []
+
+# Hacker News search keywords
+hn_keywords:
+  - "keyword1"
+  - "keyword2"
+
+# Reddit subreddits to monitor
+reddit_subreddits:
+  - "subreddit1"
+  - "subreddit2"
+
+# Source credibility scores (0-20)
+source_credibility:
+  Source Name: 15
+  Reddit r/subreddit1: 10
+
+# Keywords that boost item scores
+scoring_keywords:
+  - "important"
+  - "breaking"
+
+# Customize the LLM prompt
+prompts:
+  voice: |
+    Write as a [topic] expert.
+    Focus on practical insights.
+  article_type: "news analysis"
+  audience: "professionals in [industry]"
+  geographic_focus: "Australia"  # optional
+```
+
+2. Run your new niche:
+
+```bash
+python -m daily_ai_timeline run --niche my_niche --mode daily
+python -m daily_ai_timeline serve --dir out-my-niche --port 8003
+```
+
+### Example Niches Included
+
+| Niche | Description | Output Dir |
+|-------|-------------|------------|
+| `ai_news` | AI news and research (default) | `out/` |
+| `ai_jobs_au` | AI job opportunities in Australia | `out-jobs-au/` |
 
 ---
 
@@ -105,12 +197,13 @@ Generate blog content from aggregated news sources.
 python -m daily_ai_timeline run [OPTIONS]
 
 Options:
+  --niche, -n NAME              Niche configuration to use (default: ai_news)
   --mode {daily,realtime,weekly}  Run mode:
                                     daily    = 24h lookback (default)
                                     realtime = 1h lookback
                                     weekly   = 7-day lookback
   --top N                         Number of top items (default: 10)
-  --output, -o DIR                Output directory (default: out/)
+  --output, -o DIR                Output directory (overrides niche default)
   --fetch-content                 Fetch full article content (slower)
   --quiet, -q                     Suppress progress bars
 ```
@@ -118,14 +211,14 @@ Options:
 **Examples:**
 
 ```bash
-# Standard daily run
+# Standard daily run (uses ai_news niche)
 python -m daily_ai_timeline run --mode daily
 
 # Weekly roundup with 15 items
 python -m daily_ai_timeline run --mode weekly --top 15
 
-# Daily to custom directory
-python -m daily_ai_timeline run --mode daily --output out-daily
+# Run a different niche
+python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
 ```
 
 ### Serve Command
@@ -141,25 +234,21 @@ Options:
   --no-browser        Don't auto-open browser
 ```
 
-**Examples:**
+### Niches Command
+
+List available niche configurations.
 
 ```bash
-# Serve default output directory on port 8000
-python -m daily_ai_timeline serve
-
-# Serve a specific directory on a custom port
-python -m daily_ai_timeline serve --dir out-weekly --port 8001
-
-# Serve without opening browser
-python -m daily_ai_timeline serve --no-browser
+python -m daily_ai_timeline niches
 ```
 
 ### Sources Command
 
-List all configured news sources without fetching.
+List configured news sources for a niche.
 
 ```bash
-python -m daily_ai_timeline sources
+python -m daily_ai_timeline sources --niche ai_news
+python -m daily_ai_timeline sources --niche ai_jobs_au
 ```
 
 ---
@@ -202,17 +291,18 @@ automated_blog/
 │   ├── __init__.py
 │   ├── __main__.py      # Entry point
 │   ├── cli.py           # CLI interface
-│   ├── config.py        # Configuration
+│   ├── config.py        # Configuration + NicheConfig
 │   ├── ingest.py        # Source fetching
 │   ├── dedupe.py        # Deduplication & scoring
 │   ├── prompt.py        # LLM prompts
 │   ├── generator.py     # LLM integration
 │   ├── server.py        # Local blog server
 │   └── utils.py         # Utilities
+├── niches/              # Niche configuration files
+│   ├── ai_news.yaml     # Default AI news niche
+│   └── ai_jobs_au.yaml  # AI jobs in Australia
 ├── tests/
-├── out/                  # Default output (daily)
-├── out-daily/            # Daily output (when using --output)
-├── out-weekly/           # Weekly output (when using --output)
+├── out/                 # Default output
 ├── pyproject.toml
 └── README.md
 ```

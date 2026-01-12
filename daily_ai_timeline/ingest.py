@@ -19,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .config import ARXIV_CATEGORIES, HN_KEYWORDS, REDDIT_SUBREDDITS, RSS_FEEDS, Config
+from .config import ARXIV_CATEGORIES, HN_KEYWORDS, REDDIT_SUBREDDITS, RSS_FEEDS, Config, NicheConfig
 from .utils import clean_html, hours_since, parse_date
 
 logger = logging.getLogger(__name__)
@@ -427,6 +427,7 @@ def fetch_all_sources(
     mode: str = "daily",
     show_progress: bool = True,
     fetch_content: bool = False,
+    niche: NicheConfig | None = None,
 ) -> list[NewsItem]:
     """Fetch items from all configured sources.
 
@@ -435,6 +436,7 @@ def fetch_all_sources(
         mode: 'daily' (24h), 'realtime' (1h), or 'weekly' (7 days)
         show_progress: Whether to show progress bars
         fetch_content: Whether to fetch full article content
+        niche: Niche configuration (uses defaults if None)
 
     Returns:
         Combined list of NewsItem objects from all sources
@@ -448,40 +450,50 @@ def fetch_all_sources(
 
     logger.info(f"Fetching sources with {max_hours}h lookback window")
 
+    # Use niche sources if provided, otherwise use defaults
+    rss_feeds = niche.rss_feeds if niche else RSS_FEEDS
+    arxiv_categories = niche.arxiv_categories if niche else ARXIV_CATEGORIES
+    hn_keywords = niche.hn_keywords if niche else HN_KEYWORDS
+    reddit_subreddits = niche.reddit_subreddits if niche else REDDIT_SUBREDDITS
+
     # Fetch from all sources
     all_items = []
 
     # RSS feeds
-    rss_items = fetch_rss_feeds(
-        feeds=RSS_FEEDS,
-        max_hours=max_hours,
-        show_progress=show_progress,
-    )
-    all_items.extend(rss_items)
+    if rss_feeds:
+        rss_items = fetch_rss_feeds(
+            feeds=rss_feeds,
+            max_hours=max_hours,
+            show_progress=show_progress,
+        )
+        all_items.extend(rss_items)
 
-    # arXiv
-    arxiv_items = fetch_arxiv(
-        categories=ARXIV_CATEGORIES,
-        max_hours=max_hours,
-        show_progress=show_progress,
-    )
-    all_items.extend(arxiv_items)
+    # arXiv (skip if no categories configured)
+    if arxiv_categories:
+        arxiv_items = fetch_arxiv(
+            categories=arxiv_categories,
+            max_hours=max_hours,
+            show_progress=show_progress,
+        )
+        all_items.extend(arxiv_items)
 
     # Hacker News
-    hn_items = fetch_hackernews(
-        keywords=HN_KEYWORDS,
-        max_hours=max_hours,
-        show_progress=show_progress,
-    )
-    all_items.extend(hn_items)
+    if hn_keywords:
+        hn_items = fetch_hackernews(
+            keywords=hn_keywords,
+            max_hours=max_hours,
+            show_progress=show_progress,
+        )
+        all_items.extend(hn_items)
 
     # Reddit
-    reddit_items = fetch_reddit(
-        subreddits=REDDIT_SUBREDDITS,
-        max_hours=max_hours,
-        show_progress=show_progress,
-    )
-    all_items.extend(reddit_items)
+    if reddit_subreddits:
+        reddit_items = fetch_reddit(
+            subreddits=reddit_subreddits,
+            max_hours=max_hours,
+            show_progress=show_progress,
+        )
+        all_items.extend(reddit_items)
 
     # Optionally fetch full content for top items
     if fetch_content:
