@@ -22,7 +22,7 @@ Automate daily AI timeline posts in the style of Dr Alex Wissner-Gross. This too
 # 1. Activate your virtual environment
 source venv/bin/activate
 
-# 2. Generate today's daily blog
+# 2. Generate today's AI News blog (Dr. Alex Wissner-Gross style)
 python -m daily_ai_timeline run --mode daily
 
 # 3. View it in your browser
@@ -33,27 +33,48 @@ Then open **http://localhost:8000** in your browser.
 
 ---
 
-## Niche System - Multiple Topics from One Codebase
+## Running Multiple Blogs (Main + Niches)
 
-Create blogs for different topics/industries without copying the codebase. Each niche defines its own sources, scoring keywords, and prompt style.
-
-### Available Niches
+You can run the **main AI News blog** alongside **custom niche blogs** on different ports:
 
 ```bash
-# List all available niches
+# 1. Generate the main AI News blog (Dr. Alex style) → out-daily/
+python -m daily_ai_timeline run --mode daily --output out-daily
+
+# 2. Generate a niche blog (e.g., AI Jobs Australia) → out-jobs-au/
+python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
+
+# 3. Serve both on different ports
+python -m daily_ai_timeline serve --dir out-daily --port 8000      # Main AI News
+python -m daily_ai_timeline serve --dir out-jobs-au --port 8001    # AI Jobs AU
+```
+
+| Blog | Command | URL |
+|------|---------|-----|
+| **Main AI News** (Dr. Alex style) | `run --mode daily` | http://localhost:8000 |
+| **AI Jobs Australia** (niche) | `run --niche ai_jobs_au` | http://localhost:8001 |
+
+> **Note:** The main blog uses Dr. Alex Wissner-Gross's analytical style. Niches inherit this style but add their own voice/audience customization.
+
+---
+
+## Creating Custom Niches
+
+Niches let you create topic-specific blogs (jobs, crypto, healthcare AI, etc.) without copying the codebase.
+
+### List Available Niches
+
+```bash
 python -m daily_ai_timeline niches
 ```
 
-### Running a Specific Niche
+### Run a Niche
 
 ```bash
-# Run the AI News niche (default)
-python -m daily_ai_timeline run --niche ai_news --mode daily
-
 # Run the AI Jobs Australia niche
 python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
 
-# View sources for a niche
+# View sources configured for a niche
 python -m daily_ai_timeline sources --niche ai_jobs_au
 ```
 
@@ -115,12 +136,14 @@ python -m daily_ai_timeline run --niche my_niche --mode daily
 python -m daily_ai_timeline serve --dir out-my-niche --port 8003
 ```
 
-### Example Niches Included
+### Included Configurations
 
-| Niche | Description | Output Dir |
-|-------|-------------|------------|
-| `ai_news` | AI news and research (default) | `out/` |
-| `ai_jobs_au` | AI job opportunities in Australia | `out-jobs-au/` |
+| Name | Description | Output Dir | Style |
+|------|-------------|------------|-------|
+| *(default)* | Main AI News blog | `out/` | Dr. Alex Wissner-Gross |
+| `ai_jobs_au` | AI job opportunities in Australia | `out-jobs-au/` | Job market analyst |
+
+> **All blogs use the Dr. Alex Wissner-Gross analytical style as a base.** Niches add topic-specific voice and audience customization on top.
 
 ---
 
