@@ -41,18 +41,18 @@ You can run the **main AI News blog** alongside **custom niche blogs** on differ
 # 1. Generate the main AI News blog (Dr. Alex style) → out-daily/
 python -m daily_ai_timeline run --mode daily --output out-daily
 
-# 2. Generate a niche blog (e.g., AI Jobs Australia) → out-jobs-au/
-python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
+# 2. Generate a niche blog (e.g., AI Jobs News Australia) → out-jobs-news-au/
+python -m daily_ai_timeline run --niche ai_jobs_news_au --mode daily
 
 # 3. Serve both on different ports
-python -m daily_ai_timeline serve --dir out-daily --port 8000      # Main AI News
-python -m daily_ai_timeline serve --dir out-jobs-au --port 8001    # AI Jobs AU
+python -m daily_ai_timeline serve --dir out-daily --port 8000           # Main AI News
+python -m daily_ai_timeline serve --dir out-jobs-news-au --port 8001    # AI Jobs News AU
 ```
 
 | Blog | Command | URL |
 |------|---------|-----|
 | **Main AI News** (Dr. Alex style) | `run --mode daily` | http://localhost:8000 |
-| **AI Jobs Australia** (niche) | `run --niche ai_jobs_au` | http://localhost:8001 |
+| **AI Jobs News AU** (niche) | `run --niche ai_jobs_news_au` | http://localhost:8001 |
 
 > **Note:** The main blog uses Dr. Alex Wissner-Gross's analytical style. Niches inherit this style but add their own voice/audience customization.
 
@@ -71,11 +71,11 @@ python -m daily_ai_timeline niches
 ### Run a Niche
 
 ```bash
-# Run the AI Jobs Australia niche
-python -m daily_ai_timeline run --niche ai_jobs_au --mode daily
+# Run the AI Jobs News Australia niche
+python -m daily_ai_timeline run --niche ai_jobs_news_au --mode daily
 
 # View sources configured for a niche
-python -m daily_ai_timeline sources --niche ai_jobs_au
+python -m daily_ai_timeline sources --niche ai_jobs_news_au
 ```
 
 ### Creating a New Niche
@@ -141,7 +141,9 @@ python -m daily_ai_timeline serve --dir out-my-niche --port 8003
 | Name | Description | Output Dir | Style |
 |------|-------------|------------|-------|
 | *(default)* | Main AI News blog | `out/` | Dr. Alex Wissner-Gross |
-| `ai_jobs_au` | AI job opportunities in Australia | `out-jobs-au/` | Job market analyst |
+| `ai_jobs_news_au` | AI job market news from Reddit/HN/RSS | `out-jobs-news-au/` | Job market analyst |
+
+> **Note:** For actual job listings (scraped from job boards), see the separate [`ai_jobs_au`](https://github.com/TheKhozaChain/ai_jobs_au) project.
 
 > **All blogs use the Dr. Alex Wissner-Gross analytical style as a base.** Niches add topic-specific voice and audience customization on top.
 
@@ -322,8 +324,8 @@ automated_blog/
 │   ├── server.py        # Local blog server
 │   └── utils.py         # Utilities
 ├── niches/              # Niche configuration files
-│   ├── ai_news.yaml     # Default AI news niche
-│   └── ai_jobs_au.yaml  # AI jobs in Australia
+│   ├── ai_news.yaml          # Default AI news niche
+│   └── ai_jobs_news_au.yaml  # AI job market news (aggregated)
 ├── tests/
 ├── out/                 # Default output
 ├── pyproject.toml

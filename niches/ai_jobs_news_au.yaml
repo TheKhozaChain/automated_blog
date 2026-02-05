@@ -1,14 +1,15 @@
-# AI Jobs Australia
-# Tracks AI and ML job opportunities in Australia
+# AI Jobs News Australia
+# Aggregates AI/ML job market NEWS from Reddit, HN, and RSS feeds
+# NOTE: For actual job listings scraper, see the separate ai_jobs_au project
 
-name: "AI Jobs Australia"
-description: "Daily digest of AI and machine learning job opportunities in Australia"
-output_dir: "out-jobs-au"
+name: "AI Jobs News Australia"
+description: "Daily digest of AI job market news and discussions in Australia (aggregated from Reddit, HN, RSS)"
+output_dir: "out-jobs-news-au"
 
 # Branding
 branding:
-  site_name: "AI Jobs Australia"
-  tagline: "Your daily digest of AI career opportunities down under"
+  site_name: "AI Jobs News Australia"
+  tagline: "Your daily digest of AI career news and discussions down under"
 
 # RSS Feed sources - Job boards and company career pages
 rss_feeds:
