@@ -19,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .config import ARXIV_CATEGORIES, HN_KEYWORDS, REDDIT_SUBREDDITS, RSS_FEEDS, Config, NicheConfig
+from .config import ARXIV_CATEGORIES, HN_KEYWORDS, REDDIT_SUBREDDITS, RSS_FEEDS, X_ACCOUNTS, Config, NicheConfig
 from .utils import clean_html, hours_since, parse_date
 
 logger = logging.getLogger(__name__)
@@ -357,6 +357,177 @@ def fetch_reddit(
     return items
 
 
+def fetch_x_syndication(
+    accounts: list[str],
+    max_hours: int = 24,
+    min_likes: int = 20,
+    show_progress: bool = True,
+) -> list[NewsItem]:
+    """Fetch recent tweets from curated X/Twitter accounts via the public
+    syndication API. Requires NO API key, NO login, NO credentials.
+
+    Uses the same public endpoint that powers embedded tweet widgets.
+    If X changes or blocks this endpoint, the function fails gracefully
+    and returns an empty list with a clear log message.
+
+    Args:
+        accounts: List of X/Twitter screen names (without @)
+        max_hours: Maximum age of tweets to include
+        min_likes: Minimum likes threshold for tweets
+        show_progress: Whether to show progress bar
+
+    Returns:
+        List of NewsItem objects
+    """
+    import json
+
+    items = []
+    seen_ids = set()
+    syndication_url = "https://syndication.twitter.com/srv/timeline-profile/screen-name/{username}"
+
+    acct_iter = tqdm(accounts, desc="Fetching X/Twitter") if show_progress else accounts
+
+    for username in acct_iter:
+        try:
+            url = syndication_url.format(username=username)
+            response = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+
+            if response.status_code == 403:
+                logger.warning(
+                    f"X syndication blocked for @{username} (403 Forbidden). "
+                    "X may have restricted access to this endpoint."
+                )
+                continue
+
+            if response.status_code == 404:
+                logger.warning(f"X account @{username} not found (404).")
+                continue
+
+            if response.status_code != 200:
+                logger.warning(
+                    f"X syndication returned {response.status_code} for @{username}. "
+                    "The syndication API may have changed or be rate-limiting."
+                )
+                continue
+
+            # Parse the __NEXT_DATA__ JSON from the HTML response
+            soup = BeautifulSoup(response.text, "html.parser")
+            next_data_tag = soup.find("script", id="__NEXT_DATA__")
+
+            if not next_data_tag or not next_data_tag.string:
+                logger.warning(
+                    f"X syndication for @{username}: no __NEXT_DATA__ found. "
+                    "X may have changed their syndication page structure. "
+                    "The X/Twitter source will be unavailable until this is fixed."
+                )
+                continue
+
+            try:
+                data = json.loads(next_data_tag.string)
+            except json.JSONDecodeError:
+                logger.warning(
+                    f"X syndication for @{username}: failed to parse JSON. "
+                    "The syndication page structure may have changed."
+                )
+                continue
+
+            entries = (
+                data.get("props", {})
+                .get("pageProps", {})
+                .get("timeline", {})
+                .get("entries", [])
+            )
+
+            for entry in entries:
+                if entry.get("type") != "tweet":
+                    continue
+
+                tweet = entry.get("content", {}).get("tweet", {})
+                if not tweet:
+                    continue
+
+                tweet_id = entry.get("entry_id", "").replace("tweet-", "")
+                if tweet_id in seen_ids:
+                    continue
+                seen_ids.add(tweet_id)
+
+                # Parse creation time
+                created_at = tweet.get("created_at", "")
+                published = parse_date(created_at) if created_at else None
+                if not published:
+                    continue
+
+                # Skip tweets outside lookback window
+                if hours_since(published) > max_hours:
+                    continue
+
+                # Check engagement threshold
+                likes = tweet.get("favorite_count", 0)
+                if likes < min_likes:
+                    continue
+
+                # Get tweet text
+                text = tweet.get("text", "")
+
+                # Skip tweets that are just links with no commentary
+                clean_text = text.strip()
+                if clean_text.startswith("https://t.co/") and len(clean_text) < 30:
+                    # Tweet is just a link — try to get expanded URL for title
+                    entities = tweet.get("entities", {})
+                    urls = entities.get("urls", [])
+                    if urls:
+                        expanded = urls[0].get("expanded_url", "")
+                        display = urls[0].get("display_url", "")
+                        text = f"Shared: {display or expanded}"
+
+                # Get user info
+                user = tweet.get("user", {})
+                screen_name = user.get("screen_name", username)
+                display_name = user.get("name", username)
+
+                # Build tweet URL
+                tweet_url = f"https://x.com/{screen_name}/status/{tweet_id}"
+
+                # Build title with author
+                title_text = text[:150].replace("\n", " ")
+                if len(text) > 150:
+                    title_text += "..."
+                title = f"@{screen_name}: {title_text}"
+
+                retweets = tweet.get("retweet_count", 0)
+                replies = tweet.get("reply_count", 0)
+
+                item = NewsItem(
+                    title=title,
+                    url=tweet_url,
+                    source="X/Twitter",
+                    published=published,
+                    summary=text[:400],
+                    authors=[f"@{screen_name}"],
+                )
+                items.append(item)
+
+        except requests.exceptions.ConnectionError:
+            logger.warning(
+                f"Cannot connect to X syndication API for @{username}. "
+                "X.com may be down or blocking requests. Skipping X/Twitter source."
+            )
+            break  # If we can't connect at all, skip remaining accounts
+        except requests.exceptions.Timeout:
+            logger.warning(f"Timeout fetching X syndication for @{username}.")
+            continue
+        except Exception as e:
+            logger.warning(
+                f"Unexpected error fetching X/Twitter for @{username}: {e}. "
+                "This may indicate a change in X's syndication API. "
+                "The X/Twitter source will be skipped for this account."
+            )
+            continue
+
+    logger.info(f"Fetched {len(items)} posts from X/Twitter")
+    return items
+
+
 def extract_article_content(url: str, max_words: int = 500) -> str:
     """Extract main content from an article URL.
 
@@ -455,6 +626,7 @@ def fetch_all_sources(
     arxiv_categories = niche.arxiv_categories if niche else ARXIV_CATEGORIES
     hn_keywords = niche.hn_keywords if niche else HN_KEYWORDS
     reddit_subreddits = niche.reddit_subreddits if niche else REDDIT_SUBREDDITS
+    x_accounts = niche.x_accounts if niche else X_ACCOUNTS
 
     # Fetch from all sources
     all_items = []
@@ -486,7 +658,17 @@ def fetch_all_sources(
         )
         all_items.extend(hn_items)
 
-    # Reddit
+    # X/Twitter (via public syndication API — no credentials needed)
+    x_accounts = niche.x_accounts if niche else X_ACCOUNTS
+    if x_accounts:
+        x_items = fetch_x_syndication(
+            accounts=x_accounts,
+            max_hours=max_hours,
+            show_progress=show_progress,
+        )
+        all_items.extend(x_items)
+
+    # Reddit (legacy — only fetched if subreddits are configured)
     if reddit_subreddits:
         reddit_items = fetch_reddit(
             subreddits=reddit_subreddits,

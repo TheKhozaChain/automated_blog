@@ -177,6 +177,40 @@ def score_item(
     return score
 
 
+def _classify_source(source: str) -> str:
+    """Classify a source into a broad category for diversity enforcement.
+
+    Args:
+        source: The source name string
+
+    Returns:
+        Category string
+    """
+    s = source.lower()
+    if "arxiv" in s:
+        return "research"
+    if "x/twitter" in s:
+        return "x_twitter"
+    if "reddit" in s:
+        return "community"
+    if "hacker news" in s:
+        return "community"
+    if any(lab in s for lab in ["openai", "anthropic", "deepmind"]):
+        return "ai_labs"
+    if any(biz in s for biz in ["techcrunch", "bloomberg", "reuters"]):
+        return "business"
+    if any(sci in s for sci in ["nature", "science daily", "ieee"]):
+        return "science"
+    if any(eng in s for eng in ["electrek", "energy"]):
+        return "energy"
+    if any(sp in s for sp in ["spacenews", "nasa"]):
+        return "space"
+    if any(rob in s for rob in ["robot"]):
+        return "robotics"
+    # General tech news
+    return "tech_news"
+
+
 def score_and_rank_items(
     items: list[NewsItem],
     top_n: int = 10,
@@ -184,6 +218,10 @@ def score_and_rank_items(
     niche: NicheConfig | None = None,
 ) -> list[NewsItem]:
     """Score all items and return the top N ranked by score.
+
+    Uses diversity-aware selection to prevent any single source category
+    from dominating the results. Each category can contribute at most
+    40% of the final selection.
 
     Args:
         items: List of NewsItem objects to score
@@ -210,14 +248,34 @@ def score_and_rank_items(
             scoring_keywords,
         )
 
-    # Sort by score (descending) and take top N
+    # Sort by score (descending)
     sorted_items = sorted(items, key=lambda x: x.score, reverse=True)
-    top_items = sorted_items[:top_n]
 
-    logger.info(
-        f"Ranked {len(items)} items, selected top {len(top_items)} "
-        f"(score range: {top_items[-1].score:.1f} - {top_items[0].score:.1f})"
-    )
+    # Diversity-aware selection: cap each category at 25% of top_n
+    max_per_category = max(2, int(top_n * 0.25))
+    category_counts: dict[str, int] = {}
+    top_items: list[NewsItem] = []
+
+    for item in sorted_items:
+        if len(top_items) >= top_n:
+            break
+        category = _classify_source(item.source)
+        current_count = category_counts.get(category, 0)
+        if current_count < max_per_category:
+            top_items.append(item)
+            category_counts[category] = current_count + 1
+
+    # Re-sort selected items by score for final output
+    top_items.sort(key=lambda x: x.score, reverse=True)
+
+    if top_items:
+        logger.info(
+            f"Ranked {len(items)} items, selected top {len(top_items)} "
+            f"(score range: {top_items[-1].score:.1f} - {top_items[0].score:.1f})"
+        )
+        # Log category distribution
+        for cat, count in sorted(category_counts.items()):
+            logger.info(f"  Category '{cat}': {count} items")
 
     return top_items
 

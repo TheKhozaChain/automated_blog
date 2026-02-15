@@ -21,8 +21,11 @@ class Config:
     anthropic_api_key: Optional[str] = None
     anthropic_model: str = "claude-3-sonnet-20240229"
 
+    # X/Twitter settings
+    x_bearer_token: Optional[str] = None
+
     # Processing settings
-    top_n_items: int = 10
+    top_n_items: int = 20
     timezone: str = "Australia/Sydney"
 
     # Paths
@@ -46,7 +49,8 @@ class Config:
             openai_model=os.getenv("OPENAI_MODEL", "gpt-4o"),
             anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
             anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-3-sonnet-20240229"),
-            top_n_items=int(os.getenv("TOP_N_ITEMS", "10")),
+            x_bearer_token=os.getenv("X_BEARER_TOKEN"),
+            top_n_items=int(os.getenv("TOP_N_ITEMS", "20")),
             timezone=os.getenv("TIMEZONE", "Australia/Sydney"),
             output_dir=Path(os.getenv("OUTPUT_DIR", "out")),
             lookback_hours_daily=int(os.getenv("LOOKBACK_HOURS_DAILY", "24")),
@@ -101,10 +105,44 @@ HN_KEYWORDS = [
     "neural network",
 ]
 
-# Reddit subreddits for AI news
-REDDIT_SUBREDDITS = [
-    "MachineLearning",
-    "artificial",
+# Reddit subreddits for AI news (legacy, kept for niche compatibility)
+REDDIT_SUBREDDITS = []
+
+# X/Twitter accounts to follow for AI news (via public syndication API)
+X_ACCOUNTS = [
+    "sama",
+    "DarioAmodei",
+    "DanielaAmodei",
+    "elonmusk",
+    "satyanadella",
+    "jeffdean",
+    "demishassabis",
+    "ylecun",
+    "AndrewYNg",
+    "fchollet",
+    "karpathy",
+    "DrJimFan",
+    "hardmaru",
+    "svlevine",
+    "GaryMarcus",
+    "EMostaque",
+    "jackclarkSF",
+    "RichardSocher",
+    "EricSchmidt",
+    "bindureddy",
+    "ClementDelangue",
+    "Suhail",
+    "arthurmensch",
+    "aidangomez",
+    "alexwg",
+    "emollick",
+    "ZoeSchiffer",
+    "karaswisher",
+    "benthompson",
+    "benedictevans",
+    "eladgil",
+    "natfriedman",
+    "patrickc",
 ]
 
 # Source credibility scores (0-20)
@@ -165,6 +203,7 @@ class NicheConfig:
     arxiv_categories: list[str] = field(default_factory=lambda: ARXIV_CATEGORIES.copy())
     hn_keywords: list[str] = field(default_factory=lambda: HN_KEYWORDS.copy())
     reddit_subreddits: list[str] = field(default_factory=lambda: REDDIT_SUBREDDITS.copy())
+    x_accounts: list[str] = field(default_factory=lambda: X_ACCOUNTS.copy())
 
     # Scoring
     source_credibility: dict[str, int] = field(default_factory=lambda: SOURCE_CREDIBILITY.copy())
@@ -215,6 +254,7 @@ class NicheConfig:
             arxiv_categories=data.get("arxiv_categories", ARXIV_CATEGORIES),
             hn_keywords=data.get("hn_keywords", HN_KEYWORDS),
             reddit_subreddits=data.get("reddit_subreddits", REDDIT_SUBREDDITS),
+            x_accounts=data.get("x_accounts", X_ACCOUNTS),
             source_credibility=data.get("source_credibility", SOURCE_CREDIBILITY),
             scoring_keywords=data.get("scoring_keywords", SCORING_KEYWORDS),
             voice=prompts.get("voice", "Write in the style of a thoughtful technology analyst."),

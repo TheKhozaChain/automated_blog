@@ -273,7 +273,7 @@ def generate_article(
     # Generate the unified article
     logger.info("Generating article with inline links...")
     system_prompt, user_prompt = build_prompt(items, date, niche)
-    article = provider.generate(system_prompt, user_prompt, max_tokens=3000)
+    article = provider.generate(system_prompt, user_prompt, max_tokens=4000)
 
     # Extract headline from the article
     headline = extract_headline(article)

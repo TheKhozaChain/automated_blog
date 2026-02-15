@@ -1,32 +1,55 @@
 # AI News - Daily AI Timeline
-# This is the default niche configuration
+# Civilization-scale AI chronicle inspired by The Innermost Loop
 
 name: "AI News"
-description: "Daily AI timeline posts covering the latest in artificial intelligence"
+description: "Daily chronicle of AI and its ripple effects across civilization"
 output_dir: "out"
 
 # Branding
 branding:
   site_name: "Daily AI Timeline"
-  tagline: "Your daily digest of AI news and research"
+  tagline: "Dispatches from the event horizon"
 
-# RSS Feed sources
+# RSS Feed sources - broad civilization-scale coverage
 rss_feeds:
+  # AI Labs (primary)
   OpenAI Blog: "https://openai.com/blog/rss.xml"
   Anthropic Blog: "https://www.anthropic.com/rss.xml"
   DeepMind Blog: "https://deepmind.google/blog/rss.xml"
+
+  # Tech News
   The Verge AI: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
   TechCrunch AI: "https://techcrunch.com/category/artificial-intelligence/feed/"
   MIT Tech Review AI: "https://www.technologyreview.com/topic/artificial-intelligence/feed"
   Ars Technica AI: "https://feeds.arstechnica.com/arstechnica/technology-lab"
   Wired AI: "https://www.wired.com/feed/tag/ai/latest/rss"
 
+  # Business & Finance
+  Reuters Tech: "https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best"
+  Bloomberg Tech: "https://feeds.bloomberg.com/technology/news.rss"
+
+  # Energy & Climate
+  Ars Technica Science: "https://feeds.arstechnica.com/arstechnica/science"
+  Electrek: "https://electrek.co/feed/"
+
+  # Space
+  SpaceNews: "https://spacenews.com/feed/"
+  NASA Breaking News: "https://www.nasa.gov/news-release/feed/"
+
+  # Biotech & Science
+  Nature News: "https://www.nature.com/nature.rss"
+  Science Daily AI: "https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml"
+
+  # Robotics & Hardware
+  IEEE Spectrum: "https://spectrum.ieee.org/feeds/feed.rss"
+  The Robot Report: "https://www.therobotreport.com/feed/"
+
 # arXiv categories to fetch
 arxiv_categories:
   - "cs.AI"
   - "cs.LG"
 
-# Hacker News search keywords
+# Hacker News search keywords - broad civilization-scale
 hn_keywords:
   - "AI"
   - "OpenAI"
@@ -38,28 +61,91 @@ hn_keywords:
   - "GPT"
   - "machine learning"
   - "neural network"
+  - "data center"
+  - "nuclear"
+  - "fusion energy"
+  - "SpaceX"
+  - "robotics"
+  - "biotech"
+  - "quantum computing"
+  - "autonomous"
+  - "billion"
+  - "valuation"
 
-# Reddit subreddits
-reddit_subreddits:
-  - "MachineLearning"
-  - "artificial"
+# X/Twitter accounts to follow — AI leaders, founders, researchers, reporters, VCs
+# Uses public syndication API (no API key needed)
+x_accounts:
+  # Lab CEOs & leadership
+  - "sama"              # Sam Altman — OpenAI CEO
+  - "DarioAmodei"       # Dario Amodei — Anthropic CEO
+  - "DanielaAmodei"     # Daniela Amodei — Anthropic President
+  - "elonmusk"          # Elon Musk — xAI, Tesla, SpaceX
+  - "satyanadella"      # Satya Nadella — Microsoft CEO
+  - "jeffdean"          # Jeff Dean — Google AI lead
+  - "demishassabis"     # Demis Hassabis — DeepMind CEO
+
+  # Researchers & scientists
+  - "ylecun"            # Yann LeCun — Meta AI chief scientist
+  - "AndrewYNg"         # Andrew Ng — AI educator, Landing AI
+  - "fchollet"          # François Chollet — Keras creator, ARC
+  - "karpathy"          # Andrej Karpathy — former OpenAI/Tesla
+  - "DrJimFan"          # Jim Fan — NVIDIA senior researcher
+  - "hardmaru"          # David Ha — Sakana AI CEO
+  - "svlevine"          # Sergey Levine — UC Berkeley robotics
+  - "GaryMarcus"        # Gary Marcus — AI critic
+  - "EMostaque"         # Emad Mostaque — former Stability AI
+  - "jackclarkSF"       # Jack Clark — Anthropic co-founder
+  - "RichardSocher"     # Richard Socher — You.com CEO
+  - "EricSchmidt"       # Eric Schmidt — former Google CEO
+
+  # AI startup founders & builders
+  - "bindureddy"        # Bindu Reddy — Abacus.AI
+  - "ClementDelangue"   # Clément Delangue — Hugging Face CEO
+  - "Suhail"            # Suhail Doshi — Playground AI
+  - "arthurmensch"      # Arthur Mensch — Mistral AI CEO
+  - "aidangomez"        # Aidan Gomez — Cohere CEO
+
+  # AI reporters & commentators
+  - "alexwg"            # Dr. Alex Wissner-Gross — The Innermost Loop
+  - "emollick"          # Ethan Mollick — Wharton professor
+  - "ZoeSchiffer"       # Zoë Schiffer — Platformer
+  - "karaswisher"       # Kara Swisher — tech journalist
+  - "benthompson"       # Ben Thompson — Stratechery
+  - "benedictevans"     # Benedict Evans — tech analyst
+
+  # VCs & investors
+  - "eladgil"           # Elad Gil — investor
+  - "natfriedman"       # Nat Friedman — former GitHub CEO
+  - "patrickc"          # Patrick Collison — Stripe CEO
+
+# Reddit subreddits - disabled (empty = skipped)
+reddit_subreddits: []
 
 # Source credibility scores (0-20, higher = more credible)
 source_credibility:
   OpenAI Blog: 20
   Anthropic Blog: 20
   DeepMind Blog: 20
+  Nature News: 18
   arXiv: 18
+  Reuters Tech: 17
+  Bloomberg Tech: 17
   MIT Tech Review AI: 15
+  X/Twitter: 14
+  IEEE Spectrum: 14
+  SpaceNews: 13
+  NASA Breaking News: 13
   TechCrunch AI: 12
   The Verge AI: 10
   Ars Technica AI: 10
+  Ars Technica Science: 10
   Wired AI: 10
-  Reddit r/MachineLearning: 10
-  Reddit r/artificial: 8
+  Electrek: 10
+  The Robot Report: 10
+  Science Daily AI: 9
   Hacker News: 8
 
-# Keywords that boost item scores
+# Keywords that boost item scores - civilization-scale
 scoring_keywords:
   - "release"
   - "launch"
@@ -76,20 +162,43 @@ scoring_keywords:
   - "regulation"
   - "safety"
   - "alignment"
+  - "data center"
+  - "nuclear"
+  - "fusion"
+  - "SpaceX"
+  - "satellite"
+  - "autonomous"
+  - "drone"
+  - "valuation"
+  - "IPO"
+  - "funding"
+  - "gigawatt"
+  - "megawatt"
+  - "biotech"
+  - "genome"
+  - "quantum"
+  - "robotaxi"
+  - "humanoid"
+  - "defense"
+  - "military"
+  - "energy"
+  - "semiconductor"
+  - "chip"
+  - "TSMC"
 
 # Prompt customization
 prompts:
-  # Style guidance for the LLM
   voice: |
-    Write in the style of a thoughtful technology analyst. 
-    Be insightful but accessible. Connect dots between stories.
-    Avoid hype and buzzwords. Focus on implications, not just announcements.
-  
-  # Article type
-  article_type: "news analysis"
-  
-  # Target audience
-  audience: "AI practitioners, researchers, and technology leaders"
-  
-  # Geographic focus (optional)
+    You are a sardonic chronicler of the singularity, writing dispatches from the event horizon.
+    Your voice is deadpan, authoritative, and darkly witty. You treat civilizational-scale
+    developments with the matter-of-fact tone of a weather report. You find the absurd in the
+    profound and the profound in the mundane. Your sentences are short, declarative, and packed
+    with specific facts. You never hedge, never qualify, never say "it remains to be seen."
+    You assert. You connect AI developments to energy, capital, biology, space, robotics,
+    warfare, and labor — because these are all one story now.
+
+  article_type: "civilization chronicle"
+
+  audience: "Anyone watching the singularity unfold in real time"
+
   geographic_focus: null
