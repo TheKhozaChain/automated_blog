@@ -6,10 +6,7 @@ from datetime import datetime, timezone
 from daily_ai_timeline.ingest import NewsItem
 from daily_ai_timeline.prompt import (
     build_prompt,
-    build_thread_from_full,
     format_items_for_prompt,
-    validate_linkedin_output,
-    validate_x_output,
 )
 
 
@@ -73,107 +70,30 @@ class TestBuildPrompt:
 
     def test_returns_system_and_user_prompts(self):
         items = self._create_items()
-        system, user = build_prompt(items, "full")
+        system, user = build_prompt(items)
         assert isinstance(system, str)
         assert isinstance(user, str)
         assert len(system) > 0
         assert len(user) > 0
 
-    def test_full_prompt_includes_items(self):
+    def test_prompt_includes_items(self):
         items = self._create_items()
-        _, user = build_prompt(items, "full")
+        _, user = build_prompt(items)
         for item in items:
             assert item.title in user
-
-    def test_linkedin_prompt_different_from_full(self):
-        items = self._create_items()
-        _, full_user = build_prompt(items, "full")
-        _, linkedin_user = build_prompt(items, "linkedin")
-
-        # Different output instructions
-        assert "FULL blog post" in full_user
-        assert "LINKEDIN post" in linkedin_user
 
     def test_includes_date(self):
         items = self._create_items()
         date = datetime(2025, 1, 2)
-        _, user = build_prompt(items, "full", date)
+        _, user = build_prompt(items, date)
         assert "January" in user
 
+    def test_system_prompt_has_voice(self):
+        items = self._create_items()
+        system, _ = build_prompt(items)
+        assert "sardonic" in system.lower() or "chronicle" in system.lower()
 
-class TestValidation:
-    """Tests for output validation."""
-
-    def test_valid_tweet(self):
-        text = "This is a short tweet."
-        is_valid, error = validate_x_output(text)
-        assert is_valid
-        assert error == ""
-
-    def test_invalid_tweet_too_long(self):
-        text = "x" * 300
-        is_valid, error = validate_x_output(text)
-        assert not is_valid
-        assert "exceeds 280" in error
-
-    def test_tweet_exactly_280(self):
-        text = "x" * 280
-        is_valid, error = validate_x_output(text)
-        assert is_valid
-
-    def test_valid_linkedin(self):
-        text = "x" * 1000
-        is_valid, error = validate_linkedin_output(text)
-        assert is_valid
-
-    def test_linkedin_too_short(self):
-        text = "x" * 500
-        is_valid, error = validate_linkedin_output(text)
-        assert not is_valid
-        assert "too short" in error
-
-    def test_linkedin_too_long(self):
-        text = "x" * 2000
-        is_valid, error = validate_linkedin_output(text)
-        assert not is_valid
-        assert "too long" in error
-
-
-class TestThreadGeneration:
-    """Tests for X thread generation."""
-
-    def test_generates_multiple_tweets(self):
-        full_post = """Welcome to Thursday, January 2, 2025.
-
-This is the first paragraph about an important development.
-
-This is the second paragraph about another development.
-
-This is the third paragraph about yet another development.
-
-This is the closing thought about AI progress."""
-
-        thread = build_thread_from_full(full_post)
-        assert len(thread) >= 2
-
-    def test_tweets_are_numbered(self):
-        full_post = """Welcome to Thursday.
-
-Paragraph one is here.
-
-Paragraph two is here.
-
-Closing thought."""
-
-        thread = build_thread_from_full(full_post)
-        for i, tweet in enumerate(thread):
-            assert tweet.startswith(f"{i + 1}/")
-
-    def test_tweets_within_length(self):
-        full_post = """Welcome to Thursday, January 2, 2025. This is a test post.
-
-""" + "\n\n".join([f"Paragraph {i} with some content." for i in range(10)])
-
-        thread = build_thread_from_full(full_post)
-        for tweet in thread:
-            assert len(tweet) <= 280, f"Tweet too long: {len(tweet)} chars"
+    def test_user_prompt_has_welcome(self):
+        items = self._create_items()
+        _, user = build_prompt(items, datetime(2025, 3, 15))
+        assert "Welcome to" in user

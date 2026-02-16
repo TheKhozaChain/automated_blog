@@ -94,6 +94,30 @@ class TestScoring:
 class TestRanking:
     """Tests for item ranking."""
 
+    # Varied sources to avoid hitting the diversity cap
+    _SOURCES = [
+        "OpenAI Blog",
+        "TechCrunch AI",
+        "arXiv",
+        "Hacker News",
+        "The Verge AI",
+        "Bloomberg Tech",
+        "IEEE Spectrum",
+        "SpaceNews",
+        "Electrek",
+        "The Robot Report",
+        "Nature News",
+        "Wired AI",
+        "Ars Technica AI",
+        "MIT Tech Review AI",
+        "Anthropic Blog",
+        "DeepMind Blog",
+        "Reuters Tech",
+        "NASA Breaking News",
+        "Science Daily AI",
+        "X/Twitter",
+    ]
+
     def _create_items(self, count: int) -> list[NewsItem]:
         items = []
         for i in range(count):
@@ -101,7 +125,7 @@ class TestRanking:
                 NewsItem(
                     title=f"Article {i}",
                     url=f"https://example.com/article-{i}",
-                    source="Test Source",
+                    source=self._SOURCES[i % len(self._SOURCES)],
                     published=datetime.now(timezone.utc) - timedelta(hours=i),
                 )
             )

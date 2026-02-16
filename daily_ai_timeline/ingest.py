@@ -258,10 +258,16 @@ def fetch_hackernews(
                 # Get URL (prefer article URL, fall back to HN discussion)
                 url = hit.get("url") or f"https://news.ycombinator.com/item?id={story_id}"
 
+                # Re-tag HN items that link to X/Twitter as "X/Twitter" source
+                # so the LLM attributes them correctly
+                source = "Hacker News"
+                if url and any(domain in url for domain in ["x.com/", "twitter.com/"]):
+                    source = "X/Twitter"
+
                 item = NewsItem(
                     title=hit.get("title", "Untitled"),
                     url=url,
-                    source="Hacker News",
+                    source=source,
                     published=published,
                     summary=f"Points: {points}, Comments: {hit.get('num_comments', 0)}",
                     authors=[hit.get("author", "")],
